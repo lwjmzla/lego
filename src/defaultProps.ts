@@ -1,7 +1,33 @@
 import { mapValues, without } from 'lodash-es';
 import { PropType } from 'vue';
+
+export interface CommonComponentProps {
+  // actions
+  actionType: string;
+  url: string;
+  // size
+  height: string;
+  width: string;
+  paddingLeft: string;
+  paddingRight: string;
+  paddingTop: string;
+  paddingBottom: string;
+  // border type
+  borderStyle: string;
+  borderColor: string;
+  borderWidth: string;
+  borderRadius: string;
+  // shadow and opacity
+  boxShadow: string;
+  opacity: number;
+  // position and x,y
+  position: string;
+  left: string;
+  top: string;
+  right: string;
+}
 // 编辑器通用属性
-export const commonDefaultProps = {
+export const commonDefaultProps:CommonComponentProps = {
   // actions事件
   actionType: '',
   url: '',
@@ -15,7 +41,7 @@ export const commonDefaultProps = {
   // border type
   borderStyle: 'none',
   borderColor: '#000',
-  borderWdith: '0',
+  borderWidth: '0',
   borderRadius: '0',
   // shadow and opacity
   boxShadow: '0 0 0 #000000',
@@ -27,8 +53,22 @@ export const commonDefaultProps = {
   right: '0'
 };
 
+export interface TextComponentProps extends CommonComponentProps {
+  text: string;
+  fontSize: string;
+  fontFamily: string;
+  fontWeight: string;
+  fontStyle: string;
+  textDecoration: string;
+  lineHeight: string;
+  textAlign: string;
+  color: string;
+  backgroundColor: string;
+  tag: string;
+}
+
 // 文本通用属性
-export const textDefaultProps = {
+export const textDefaultProps:TextComponentProps = {
   text: '正文内容',
   fontSize: '14px',
   fontFamily: '',
@@ -39,6 +79,7 @@ export const textDefaultProps = {
   textAlign: 'left',
   color: '#000',
   backgroundColor: '',
+  tag: 'div',
   ...commonDefaultProps
 };
 

@@ -1,5 +1,6 @@
+import { TextComponentProps } from './defaultProps';
 // 右侧组件列表数据
-export const defaultTextTemplates = [
+export const defaultTextTemplates: Partial<TextComponentProps>[] = [
   {
     text: '大标题',
     fontSize: '30px',
@@ -24,4 +25,4 @@ export const defaultTextTemplates = [
     height: '40px',
     tag: 'button'
   }
-]
+];

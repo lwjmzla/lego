@@ -23,11 +23,11 @@ const props = defineProps({
   // fontSize: {
   //   type: String
   // },
-  ...transformToComponentProps(textDefaultProps), // !把props默认值转为props类型定义
-  tag: {
-    type: String,
-    default: 'div'
-  }
+  ...transformToComponentProps(textDefaultProps) // !把props默认值转为props类型定义
+  // tag: {
+  //   type: String,
+  //   default: 'div'
+  // }
 });
 // const styleProps = computed(() => pick(props, textStylePropNames));
 // console.log(props)

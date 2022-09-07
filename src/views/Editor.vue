@@ -4,7 +4,7 @@
       <a-col :span="6">
         <a-layout-sider class="editor-col">
           <h1>组件列表</h1>
-          <!-- <components-list :list="defaultTextTemplates" /> -->
+          <components-list :list="defaultTextTemplates" @onItemClick="addItem" />
         </a-layout-sider>
       </a-col>
       <a-col :span="12">
@@ -29,23 +29,27 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-// import ComponentsList from '@/components/ComponentsList.vue';
-// import { defaultTextTemplates } from '../defaultTemplates';
+import ComponentsList from '@/components/ComponentsList.vue';
+import { defaultTextTemplates } from '../defaultTemplates';
 import LText from '@/components/LText.vue';
 import { useStore } from '@/store';
-
+import { TextComponentProps } from '../defaultProps';
 
 export default defineComponent({
   components: {
-    LText
-    // ComponentsList
+    LText,
+    ComponentsList
   },
   setup () {
     const store = useStore();
     const components = computed(() => store.state.editor.components);
+    const addItem = (props:Partial<TextComponentProps>) => {
+      store.commit('addComponent', props);
+    };
     return {
-      components
-      // defaultTextTemplates
+      components,
+      defaultTextTemplates,
+      addItem
     };
   }
 });

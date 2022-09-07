@@ -49,12 +49,6 @@ module.exports = {
       singleline: 'never',
       multiline: 'always'
     }],
-    'vue/max-attributes-per-line': ['error', {
-      singleline: 3,
-      multiline: {
-        max: 1
-      }
-    }],
     'vue/html-indent': ['error', 2, {
       attribute: 1,
       baseIndent: 1,
@@ -71,6 +65,7 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    'max-len': ['error', { code: 150 }]
+    'max-len': ['error', { code: 150 }],
+    'vue/max-attributes-per-line': 'off'
   }
 };
