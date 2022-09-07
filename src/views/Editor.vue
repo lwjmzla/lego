@@ -4,7 +4,7 @@
       <a-col :span="6">
         <a-layout-sider class="editor-col">
           <h1>组件列表</h1>
-          <components-list :list="defaultTextTemplates" />
+          <!-- <components-list :list="defaultTextTemplates" /> -->
         </a-layout-sider>
       </a-col>
       <a-col :span="12">
@@ -16,11 +16,6 @@
             :key="component.id"
             v-bind="component.props"
           />
-          <!-- <l-text
-            v-for="component in components"
-            :key="component.id"
-            v-bind="component.props"
-          ></l-text> -->
         </a-layout-sider>
       </a-col>
       <a-col :span="6">
@@ -33,27 +28,27 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
-import { useStore } from 'vuex';
-import { GlobalDataProps } from '../store/index';
-import ComponentsList from '@/components/ComponentsList.vue';
-import { defaultTextTemplates } from '../defaultTemplates';
+import { defineComponent, computed } from 'vue';
+// import ComponentsList from '@/components/ComponentsList.vue';
+// import { defaultTextTemplates } from '../defaultTemplates';
 import LText from '@/components/LText.vue';
+import { useStore } from '@/store';
 
-export default {
+
+export default defineComponent({
   components: {
-    LText,
-    ComponentsList
+    LText
+    // ComponentsList
   },
   setup () {
-    const store = useStore<GlobalDataProps>();
+    const store = useStore();
     const components = computed(() => store.state.editor.components);
     return {
-      components,
-      defaultTextTemplates
+      components
+      // defaultTextTemplates
     };
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>
