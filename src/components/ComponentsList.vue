@@ -1,6 +1,10 @@
 <template>
   <div class="create-component-list">
-    <div v-for="(item, index) in list" :key="index" class="component-item" @click="onItemClick(item)">
+    <div v-for="(item, index) in list"
+      :key="index"
+      class="component-item"
+      @click="onItemClick(item)"
+    >
       <l-text v-bind="item"></l-text>
     </div>
   </div>

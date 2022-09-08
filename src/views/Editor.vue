@@ -10,49 +10,65 @@
       <a-col :span="12">
         <a-layout-sider class="editor-col center">
           <h1>画布区域</h1>
-          <component
-            :is="component.name"
-            v-for="component in components"
-            :key="component.id"
-            v-bind="component.props"
-          />
+          <div class="preview-list">
+            <edit-wrapper
+              v-for="component in components"
+              :key="component.id"
+              :id="component.id"
+              @setActive="setActive"
+              @remove="removeComponent"
+              :active="component.id === (currentElement && currentElement.id)"
+            >
+              <!-- :is="component.name"  直接这样渲染不了，奇怪-->
+              <component
+                :is="useComponentList[component.name]"
+                v-bind="component.props"
+              />
+            </edit-wrapper>
+          </div>
         </a-layout-sider>
       </a-col>
       <a-col :span="6">
         <a-layout-sider class="editor-col">
           <h1>组件属性</h1>
+          <pre>{{ currentElement && currentElement.props }}</pre>
         </a-layout-sider>
       </a-col>
     </a-layout>
   </a-row>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script lang="ts" setup>
+import { computed } from 'vue';
 import ComponentsList from '@/components/ComponentsList.vue';
 import { defaultTextTemplates } from '../defaultTemplates';
 import LText from '@/components/LText.vue';
 import { useStore } from '@/store';
+import { ComponentData } from '@/store/editor';
 import { TextComponentProps } from '../defaultProps';
+import EditWrapper from '@/components/EditWrapper.vue';
 
-export default defineComponent({
-  components: {
-    LText,
-    ComponentsList
-  },
-  setup () {
-    const store = useStore();
-    const components = computed(() => store.state.editor.components);
-    const addItem = (props:Partial<TextComponentProps>) => {
-      store.commit('addComponent', props);
-    };
-    return {
-      components,
-      defaultTextTemplates,
-      addItem
-    };
-  }
-});
+const store = useStore();
+const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement);
+const components = computed(() => store.state.editor.components);
+const addItem = (props:Partial<TextComponentProps>) => {
+  store.commit('addComponent', props);
+};
+
+const setActive = (id: string) => {
+  store.commit('setActive', id);
+};
+// const componentChange = (val: any) => {
+//   store.commit('updateComponent', val)
+// }
+const removeComponent = () => {
+  store.commit('removeComponent');
+};
+const useComponentList = {
+  LText,
+  LImage: LText
+};
+
 </script>
 
 <style lang="scss" scoped>

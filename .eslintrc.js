@@ -53,7 +53,7 @@ module.exports = {
       attribute: 1,
       baseIndent: 1,
       closeBracket: 0,
-      alignAttributesVertically: true,
+      alignAttributesVertically: false,
       ignores: ['VExpressionContainer']
     }],
     'vue/html-closing-bracket-spacing': ['error', {
@@ -66,6 +66,11 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     'max-len': ['error', { code: 150 }],
-    'vue/max-attributes-per-line': 'off'
+    'vue/max-attributes-per-line': ['error', {
+      singleline: 3,
+      multiline: {
+        max: 1
+      }
+    }]
   }
 };

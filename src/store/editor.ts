@@ -3,36 +3,38 @@ import { v4 as uuidv4 } from 'uuid';
 import { GlobalDataProps } from './index';
 import { TextComponentProps } from '../defaultProps';
 
-interface ComponentData {
+type ComponentName = 'LText' | 'LImage'
+
+export interface ComponentData {
   props: Partial<TextComponentProps> // 索引签名
   id: string
-  name: string
+  name: ComponentName
 }
 // editor的state类型数据
 export interface EditorProps {
   components: ComponentData[]
-  currentElement: string
+  currentId: string
 }
 
 export const testComponents: ComponentData[] = [
   {
     id: uuidv4(),
-    name: 'l-text',
+    name: 'LText',
     props: { text: 'hello', fontSize: '20px', color: 'red' }
   },
   {
     id: uuidv4(),
-    name: 'l-text',
+    name: 'LText',
     props: { text: 'hello2', fontSize: '30px', fontWeight: 'bold' }
   },
   {
     id: uuidv4(),
-    name: 'l-text',
+    name: 'LText',
     props: {
       text: 'hello3',
-      fontSize: '40px',
-      actionType: 'url',
-      url: 'https://www.baidu.com'
+      fontSize: '40px'
+      // actionType: 'url',
+      // url: 'https://www.baidu.com'
     }
   }
 ];
@@ -40,19 +42,30 @@ export const testComponents: ComponentData[] = [
 const editor: Module<EditorProps, GlobalDataProps> = {
   state: {
     components: testComponents,
-    currentElement: ''
+    currentId: ''
   },
   mutations: {
     addComponent (state, props: Partial<TextComponentProps>) {
       const newComponent:ComponentData = {
         id: uuidv4(),
-        name: 'l-text',
+        name: 'LText',
         props
       };
       state.components.push(newComponent);
     },
-    deleteComponent (state, index: number) {
-      // todo
+    setActive (state, currentId: string) {
+      state.currentId = currentId;
+    },
+    removeComponent (state) {
+      const currentIndex = state.components.findIndex(item => item.id === state.currentId);
+      if (currentIndex) {
+        state.components.splice(currentIndex, 1);
+      }
+    }
+  },
+  getters: {
+    getCurrentElement (state) {
+      return state.components.find(item => item.id === state.currentId);
     }
   }
 };
