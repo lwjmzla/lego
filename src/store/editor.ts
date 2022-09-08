@@ -58,7 +58,8 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     },
     removeComponent (state) {
       const currentIndex = state.components.findIndex(item => item.id === state.currentId);
-      if (currentIndex) {
+      if (currentIndex || currentIndex === 0) {
+        state.currentId = '';
         state.components.splice(currentIndex, 1);
       }
     }

@@ -7,6 +7,7 @@ import axios from 'axios';
 import 'element-plus/dist/index.css';
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+// import './test.js';
 
 // !<el-icon><plus :size="80" /></el-icon> //icon组件
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';

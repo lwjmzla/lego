@@ -31,6 +31,7 @@ const props = defineProps({
 });
 // const styleProps = computed(() => pick(props, textStylePropNames));
 // console.log(props)
+// props.opacity
 
 const { styleProps, handleClick } = useComponentCommon(props, textStylePropNames);
 </script>

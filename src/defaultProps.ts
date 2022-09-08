@@ -1,4 +1,4 @@
-import { mapValues, without } from 'lodash-es';
+import { without, reduce } from 'lodash-es';
 import { PropType } from 'vue';
 
 export interface CommonComponentProps {
@@ -87,21 +87,36 @@ export const textDefaultProps:TextComponentProps = {
 export const textStylePropNames = without(Object.keys(textDefaultProps), 'actionsType', 'url', 'text');
 
 // 处理为vue-props声明的值
+// export const transformToComponentProps = <T extends Record<string, any>> (props: T) => {
+//   // !通过lodash的mapValues来创建一个 与传入对象key 一样的对象，只是改变key对应的value
+//   return mapValues(props, item => {
+//     // item：值
+//     // item.constructor：当前item的实例String/Number
+//     // !返回 {text: {type: String, default: '正文内容'}}
+//     return {
+//       type: item.constructor,
+//       default: item
+//     };
+//   }) as unknown as {
+//     [key in keyof T]: {
+//       type: PropType<T[key]>;
+//       default: T[key];
+//     }
+//   };
+// };
+// !处理为vue-props声明的值, reduce比mapValues更加功能强大，又可以拦截、又可以修改数据。
 export const transformToComponentProps = <T extends Record<string, any>> (props: T) => {
-  // !通过lodash的mapValues来创建一个 与传入对象key 一样的对象，只是改变key对应的value
-  return mapValues(props, item => {
-    // item：值
-    // item.constructor：当前item的实例String/Number
-    // !返回 {text: {type: String, default: '正文内容'}}
-    return {
-      type: item.constructor,
-      default: item
+  return reduce(props, (result, value, key) => {
+    const newKey = key as keyof T;
+    result[newKey] = {
+      type: value.constructor,
+      default: value
     };
-  }) as unknown as {
+    return result;
+  }, {} as unknown as {
     [key in keyof T]: {
       type: PropType<T[key]>;
       default: T[key];
     }
-  };
+  });
 };
-

@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, PropType } from 'vue';
+import { PropType } from 'vue';
 import LText from './LText.vue';
 import { TextComponentProps } from '../defaultProps';
 
