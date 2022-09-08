@@ -20,12 +20,12 @@ export const testComponents: ComponentData[] = [
   {
     id: uuidv4(),
     name: 'LText',
-    props: { text: 'hello', fontSize: '20px', color: 'red' }
+    props: { text: 'hello', fontSize: '20px', color: 'red', lineHeight: 1, textAlign: 'left', fontFamily: '' }
   },
   {
     id: uuidv4(),
     name: 'LText',
-    props: { text: 'hello2', fontSize: '30px', fontWeight: 'bold' }
+    props: { text: 'hello2', fontSize: '30px', fontWeight: 'bold', lineHeight: 2, textAlign: 'center' }
   },
   {
     id: uuidv4(),

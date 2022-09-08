@@ -60,7 +60,7 @@ export interface TextComponentProps extends CommonComponentProps {
   fontWeight: string;
   fontStyle: string;
   textDecoration: string;
-  lineHeight: string;
+  lineHeight: number;
   textAlign: string;
   color: string;
   backgroundColor: string;
@@ -75,7 +75,7 @@ export const textDefaultProps:TextComponentProps = {
   fontWeight: 'normal',
   fontStyle: 'normal',
   textDecoration: 'none',
-  lineHeight: '1',
+  lineHeight: 1,
   textAlign: 'left',
   color: '#000',
   backgroundColor: '',
