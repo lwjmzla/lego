@@ -1,13 +1,14 @@
 <template>
   <div class="props-table">
-    {{finalProps}}
+    <div style="max-height: 200px;overflow: auto;">{{finalProps}}</div>
     <div v-for="(item,key) in finalProps" :key="key" class="prop-item">
       <span class="label" v-if="item && item.text">{{ item.text }}:</span>
       <div class="prop-component">
-        <component v-if="item"
+        <component v-if="item && item.valueProp"
           :is="item.component"
-          :value="item.value"
+          :[item.valueProp]="item.value"
           v-bind="item.extraProps"
+          v-on="item.events"
         >
           <template v-if="item.options">
             <component
@@ -28,12 +29,14 @@ import { PropType, computed } from 'vue';
 import { TextComponentProps } from '@/defaultProps';
 import { mapPropsToForm, PropToForm, PropsToForm } from '@/propsMap';
 import { reduce } from 'lodash-es';
+
 const props = defineProps({
   props: {
     type: Object as PropType<Partial<TextComponentProps>>,
     required: true
   }
 });
+const emit = defineEmits(['change']);
 
 // !最终得到过滤后的PropsToForm类型数据
 const finalProps = computed(() => {
@@ -43,8 +46,16 @@ const finalProps = computed(() => {
     const newKey = key as keyof TextComponentProps;
     const item = mapPropsToForm[newKey]; // !匹配需要转换成组件形式的  mapPropsToForm['text']存在的话，就映射对应组件
     if (item) {
-      const obj:PropToForm = { ...item };
+      const obj = { ...item } as PropToForm;
       obj.value = obj.initialTransForm ? obj.initialTransForm(value) : value; // !obj.value可能是number类型之类的
+      obj.valueProp = obj.valueProp ? obj.valueProp : 'value'; // !自定义 传值的属性
+      obj.eventName = obj.eventName || 'change';
+      obj.events = {
+        [obj.eventName]: (e:string) => {
+          console.log(key, e);
+          emit('change', { key, value: obj.afterTransForm ? obj.afterTransForm(e) : e });
+        }
+      };
       result[newKey] = obj;
     }
     return result;

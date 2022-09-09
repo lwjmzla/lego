@@ -32,7 +32,7 @@
         <a-layout-sider class="editor-col">
           <h1>组件属性</h1>
           <template v-if="currentElement && currentElement.props">
-            <PropsTable :props="currentElement.props" />
+            <PropsTable :props="currentElement.props" @change="componentChange" />
           </template>
           <pre>{{ currentElement && currentElement.props }}</pre>
         </a-layout-sider>
@@ -71,6 +71,10 @@ const removeComponent = () => {
 const useComponentList = {
   LText,
   LImage: LText
+};
+
+const componentChange = (val: any) => {
+  store.commit('updateComponent', val);
 };
 
 </script>

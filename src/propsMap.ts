@@ -1,12 +1,17 @@
+import { ChangeEvent } from 'ant-design-vue/lib/_util/EventInterface';
 import { TextComponentProps } from './defaultProps';
-export interface PropToForm {
+export interface PropToForm { // !当前文件不需要
   component: string;
   subComponent?: string;
-  value?: string | number; // !其实有可能number之类
   extraProps?: { [key: string]: any };
-  text?: string;
+  text?: string; // !文本描述
   options?: { text: string; value: any }[];
-  initialTransForm?: (val: any) => any
+  initialTransForm?: (val: any) => any;
+  afterTransForm?: (val: any) => any;
+  valueProp?: string; // !自定义 传值的属性
+  eventName?: string;
+  events?: { [key: string]: (e: any) => void }; // ! 在PropsTable.vue文件赋值
+  value?: string | number; // !值，  在PropsTable.vue文件赋值
 }
 
 export type PropsToForm = {
@@ -20,12 +25,14 @@ export const mapPropsToForm: PropsToForm = {
     extraProps: {
       minRows: 3,
       'auto-size': { minRows: 3, maxRows: 5 }
-    }
+    },
+    eventName: 'update:value'
   },
   fontSize: {
     text: '字号',
     component: 'a-input-number',
-    initialTransForm: (val: string) => parseInt(val) // !20px => 20
+    initialTransForm: (val: string) => parseInt(val), // !20px => 20
+    afterTransForm: (val: number) => val + 'px'
   },
   lineHeight: {
     text: '行高',
@@ -44,7 +51,8 @@ export const mapPropsToForm: PropsToForm = {
       { text: '左', value: 'left' },
       { text: '中', value: 'center' },
       { text: '右', value: 'right' }
-    ]
+    ],
+    afterTransForm: (e: ChangeEvent) => e.target.value
   },
   fontFamily: {
     text: '字体',

@@ -2,6 +2,7 @@ import { Module } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalDataProps } from './index';
 import { TextComponentProps } from '../defaultProps';
+import { cloneDeep } from 'lodash-es';
 
 type ComponentName = 'LText' | 'LImage'
 
@@ -62,6 +63,18 @@ const editor: Module<EditorProps, GlobalDataProps> = {
         state.currentId = '';
         state.components.splice(currentIndex, 1);
       }
+    },
+    updateComponent (state, { key, value }: {key: keyof TextComponentProps, value: number | string}) {
+      const currentIndex = state.components.findIndex(item => item.id === state.currentId);
+      const currentElement = state.components[currentIndex];
+      // !-----------这里是另外clone了一个对象--start
+      // const newCurrentElement = cloneDeep(currentElement);
+      // // @ts-ignore
+      // newCurrentElement.props[key] = value;
+      // state.components[currentIndex] = newCurrentElement;
+      // !-----------这里是另外clone了一个对象--end
+      // @ts-ignore
+      currentElement.props[key] = value; // !这个更加直接。
     }
   },
   getters: {
