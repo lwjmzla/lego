@@ -50,7 +50,8 @@ import { useStore } from '@/store';
 import { ComponentData } from '@/store/editor';
 import { TextComponentProps } from '../defaultProps';
 import EditWrapper from '@/components/EditWrapper.vue';
-import PropsTable from '@/components/PropsTable.vue';
+// import PropsTable from '@/components/PropsTable.vue'; // !2种方式都可以
+import PropsTable from '@/components/PropsTableTsx.vue'; // !2种方式都可以
 
 const store = useStore();
 const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement);

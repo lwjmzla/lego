@@ -16,7 +16,11 @@
               v-for="(option,index) in item.options"
               :key="index"
               :value="option.value"
-            >{{option.text}}</component>
+            >
+              <!-- {{option.text}} -->
+              <RenderVnode :vNode="option.text"></RenderVnode>
+            </component>
+            <!-- :style="key === 'fontFamily' ? {fontFamily: option.value} : {}" -->
           </template>
         </component>
       </div>
@@ -29,6 +33,7 @@ import { PropType, computed } from 'vue';
 import { TextComponentProps } from '@/defaultProps';
 import { mapPropsToForm, PropToForm, PropsToForm } from '@/propsMap';
 import { reduce } from 'lodash-es';
+import RenderVnode from '@/components/renderVnode';
 
 const props = defineProps({
   props: {
@@ -56,6 +61,11 @@ const finalProps = computed(() => {
           emit('change', { key, value: obj.afterTransForm ? obj.afterTransForm(e) : e });
         }
       };
+      /*
+        TODO 开发展示和编辑的属性表单组件的真谛
+        ! 1.必须提供一个属性传入需要编辑的值默认为value
+        ? 2.必须提供一个事件发射出编辑后新的值默认为change
+      */
       result[newKey] = obj;
     }
     return result;

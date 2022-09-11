@@ -1,3 +1,4 @@
+import { VNode, h } from 'vue';
 import { ChangeEvent } from 'ant-design-vue/lib/_util/EventInterface';
 import { TextComponentProps } from './defaultProps';
 export interface PropToForm { // !当前文件不需要
@@ -5,7 +6,7 @@ export interface PropToForm { // !当前文件不需要
   subComponent?: string;
   extraProps?: { [key: string]: any };
   text?: string; // !文本描述
-  options?: { text: string; value: any }[];
+  options?: { text: string | VNode; value: any }[];
   initialTransForm?: (val: any) => any;
   afterTransForm?: (val: any) => any;
   valueProp?: string; // !自定义 传值的属性
@@ -17,6 +18,35 @@ export interface PropToForm { // !当前文件不需要
 export type PropsToForm = {
   [P in keyof TextComponentProps]?: PropToForm
 }
+
+const fontFamilyArr = [
+  { text: '宋体', value: '"SimSun","STSong"' },
+  { text: '黑体', value: '"SimHei","STHeiti"' },
+  { text: '楷体', value: '"KaiTi","STKaiti"' },
+  { text: '仿宋', value: '"FangSong","STFangsong"' },
+  { text: 'Arial', value: '"Arial", sans-serif' },
+  { text: 'Arial Black', value: '"Arial Black", sans-serif' },
+  { text: 'Comic Sans MS', value: '"Comic Sans MS"' },
+  { text: 'Courier New', value: '"Courier New", monospace' },
+  { text: 'Georgia', value: '"Georgia", serif' },
+  { text: 'Times New Roman', value: '"Times New Roman", serif' }
+];
+
+const fontFamilyOptions = fontFamilyArr.map(({ text, value }) => {
+  return {
+    value,
+    text: h('span', { style: { fontFamily: value } }, text)
+  };
+});
+/*
+  !实现 字体选项直接显示对应字体样式的方法
+  !方法1.直接用fontFamilyArr,PropsTable.vue渲染options组件时，加上:style="key === 'fontFamily' ? {fontFamily: option.value} : {}"
+  !  优点：简单粗暴   缺点：代码乱入，在共性代码上加了特殊处理，不美观
+  !方法2.用fontFamilyOptions，text改造成VNode节点，另外通过renderVnode组件渲染VNode  ---  PropsTable.vue
+  !  优点：这样可以统一在配置的地方配置，格式统一，美观   缺点：需要另外创建并引入renderVnode组件
+  !方法3.用fontFamilyOptions，text改造成VNode节点，采用JSX方式渲染VNode ---- PropsTableTsx.vue
+  !  优点：JSX比较灵活，可以统一在配置的地方配置，格式统一  缺点：可读性没template好
+*/
 
 export const mapPropsToForm: PropsToForm = {
   text: {
@@ -63,16 +93,8 @@ export const mapPropsToForm: PropsToForm = {
     },
     options: [
       { text: '无', value: '' },
-      { text: '宋体', value: '"SimSun","STSong"' },
-      { text: '黑体', value: '"SimHei","STHeiti"' },
-      { text: '楷体', value: '"KaiTi","STKaiti"' },
-      { text: '仿宋', value: '"FangSong","STFangsong"' },
-      { text: 'Arial', value: '"Arial", sans-serif' },
-      { text: 'Arial Black', value: '"Arial Black", sans-serif' },
-      { text: 'Comic Sans MS', value: '"Comic Sans MS"' },
-      { text: 'Courier New', value: '"Courier New", monospace' },
-      { text: 'Georgia', value: '"Georgia", serif' },
-      { text: 'Times New Roman', value: '"Times New Roman", serif' }
+      ...fontFamilyOptions
+      // ...fontFamilyArr
     ]
   }
 };
