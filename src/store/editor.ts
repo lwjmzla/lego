@@ -21,7 +21,7 @@ export const testComponents: ComponentData[] = [
   {
     id: uuidv4(),
     name: 'LText',
-    props: { text: 'hello', fontSize: '20px', color: 'red', lineHeight: 1, textAlign: 'left', fontFamily: '' }
+    props: { text: 'hello', fontSize: '20px', color: 'red', lineHeight: 1, opacity: 1, textAlign: 'left', fontFamily: '' }
   },
   {
     id: uuidv4(),

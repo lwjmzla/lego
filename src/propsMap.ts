@@ -73,6 +73,18 @@ export const mapPropsToForm: PropsToForm = {
       step: 0.1
     }
   },
+  opacity: {
+    text: '透明度',
+    component: 'a-slider',
+    extraProps: {
+      max: 100,
+      min: 0,
+      step: 1,
+      reverse: true
+    },
+    initialTransForm: (val: number) => val * 100,
+    afterTransForm: (val: number) => val / 100
+  },
   textAlign: {
     text: '对齐',
     component: 'a-radio-group',
