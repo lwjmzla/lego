@@ -1,0 +1,92 @@
+import { shallowMount, mount } from '@vue/test-utils';
+import HelloWorld from '@/components/HelloWorld.vue';
+
+/*
+  !使用方式
+  npm run test:unit:watch // or yarn test:unit:watch
+  npm run test:unit:watch -- yourTest.spec.ts
+*/
+
+describe('HelloWorld.vue', () => {
+  // it('renders props.msg when passed', () => {
+  //   const msg = 'new message';
+  //   const wrapper = mount(HelloWorld, { // !mount是完整加载(但是遇到异步的话，怎么处理？)， shallowMount是表层加载，如果HelloWorld组件里另外有别的组件引用，就不会加载
+  //     props: { msg }
+  //   });
+  //   //console.log(wrapper.html()) // !html信息
+  //   //console.log(wrapper.text()) // !只显示文本信息
+  //   // console.log(wrapper.findAll('h1')) // !
+  //   // expect(wrapper.findComponent({ name: 'HelloWorld' }).exists()).toBe(true)
+  //   // !getComponent的意义:只要判断是否渲染了子组件，是否传递了正确的属性就可以了，这就是单元测试的意义
+  //   expect(wrapper.findComponent({ name: 'Hello' }).exists()).toBe(true)
+  //   console.log(wrapper.findComponent({ name: 'Hello' }).props()) 
+  //   console.log(wrapper.findComponent({ name: 'Hello' }).html()) 
+  //   // !通过name还可以找到子组件(也是wrapper)，wrapper用mount，显示<div class="hello"><h1>defaultMsg</h1></div>
+  //   // !wrapper用shallowMount，显示<hello-stub msg="defaultMsg"></hello-stub>
+
+  //   expect(wrapper.text()).toMatch(msg);
+  //   console.log('-------------------------------')
+  // });
+
+  // it('click', async () => {
+  //   const msg = 'new message';
+  //   const wrapper = shallowMount(HelloWorld, {
+  //     props: { msg }
+  //   });
+  //   await wrapper.get('button').trigger('click')
+  //   expect(wrapper.get('button').text()).toBe('2')
+  // })
+
+  // it('click', (done) => {
+  //   const msg = 'new message';
+  //   const wrapper = shallowMount(HelloWorld, {
+  //     props: { msg }
+  //   });
+  //   //await wrapper.get('button').trigger('click')
+  //   wrapper.vm.setCount()
+  //   setTimeout(() => {
+  //     done()
+  //     expect(wrapper.get('button').text()).toBe('2')
+  //     console.log(wrapper.vm.count)
+  //   },100)
+  // })
+
+  // it('click', async () => {
+  //   const msg = 'new message';
+  //   const wrapper = shallowMount(HelloWorld, {
+  //     props: { msg }
+  //   });
+  //   //await wrapper.get('button').trigger('click')
+  //   wrapper.vm.setCount()
+  //   await wrapper.vm.$nextTick() // 等待事件处理完成
+  //   expect(wrapper.get('button').text()).toBe('2')
+  //   console.log(wrapper.vm.count)
+  // })
+
+  it('click', async () => {
+    const todoContent = 'buy milk'
+    const msg = 'new message';
+    const wrapper = shallowMount(HelloWorld, {
+      props: { msg }
+    });
+    await wrapper.get('input').setValue(todoContent)
+    expect(wrapper.get('input').element.value).toBe(todoContent)
+    await wrapper.get('.addTodo').trigger('click')
+    //expect(wrapper.findAll('li').length).toBe(1)
+    expect(wrapper.findAll('li')).toHaveLength(1)
+    expect(wrapper.findAll('li')[0].text()).toBe(todoContent)
+    console.log(wrapper.emitted())
+    /*
+      {
+        send: [ [ 'buy milk' ] ],       
+      }
+    */
+    // 断言事件已经被触发
+    expect(wrapper.emitted().send).toBeTruthy()
+    expect(wrapper.emitted()).toHaveProperty('send')
+    // 断言事件的数量
+    expect(wrapper.emitted().send.length).toBe(1)
+    // 断言事件的数量
+    expect(wrapper.emitted().send[0]).toEqual([todoContent]) // !数组、对象等引用类型的比较 用toEqual
+  })
+});

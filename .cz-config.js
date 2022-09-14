@@ -3,22 +3,22 @@
 module.exports = {
 
   types: [
-    {value: 'feat',     name: 'feat:     新特性或功能'},
-    {value: 'fix',      name: 'fix:      修复Bug'},
-    {value: 'docs',     name: 'docs:     文档的变更'},
-    {value: 'style',    name: 'style:    不影响代码运行的风格更改(空白、格式、缺少分号等)'},
-    {value: 'refactor', name: 'refactor: 代码重构, 注意和feat、fix区分'},
-    {value: 'perf',     name: 'perf:     提高性能'},
-    {value: 'test',     name: 'test:     添加测试'},
-    {value: 'chore',    name: 'chore:    开发工具(构建、脚手架工具等)和库（如文档生成）的更改'},
-    {value: 'revert',   name: 'revert:   代码回滚'},
-    {value: 'WIP',      name: 'WIP:      进行中开发'}
+    { value: 'feat', name: 'feat:     新特性或功能' },
+    { value: 'fix', name: 'fix:      修复Bug' },
+    { value: 'docs', name: 'docs:     文档的变更' },
+    { value: 'style', name: 'style:    不影响代码运行的风格更改(空白、格式、缺少分号等)' },
+    { value: 'refactor', name: 'refactor: 代码重构, 注意和feat、fix区分' },
+    { value: 'perf', name: 'perf:     提高性能' },
+    { value: 'test', name: 'test:     添加测试' },
+    { value: 'chore', name: 'chore:    开发工具(构建、脚手架工具等)和库（如文档生成）的更改' },
+    { value: 'revert', name: 'revert:   代码回滚' },
+    { value: 'WIP', name: 'WIP:      进行中开发' }
   ],
 
   // list of Function Modules
   scopes: [
-    {name: '模块1'},
-    {name: '模块2'},
+    { name: '模块1' },
+    { name: '模块2' }
   ],
 
   // it needs to match the value for field type. Eg.: 'fix'
