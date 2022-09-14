@@ -1,5 +1,9 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import HelloWorld from '@/components/HelloWorld.vue';
+import axios from 'axios';
+import flushPromises from 'flush-promises';
+jest.mock('axios');
+const mockAxios = axios as jest.Mocked<typeof axios>; //! 添加类型，提供代码快捷提示
 
 /*
   !使用方式
@@ -19,8 +23,8 @@ describe('HelloWorld.vue', () => {
   //   // expect(wrapper.findComponent({ name: 'HelloWorld' }).exists()).toBe(true)
   //   // !getComponent的意义:只要判断是否渲染了子组件，是否传递了正确的属性就可以了，这就是单元测试的意义
   //   expect(wrapper.findComponent({ name: 'Hello' }).exists()).toBe(true)
-  //   console.log(wrapper.findComponent({ name: 'Hello' }).props()) 
-  //   console.log(wrapper.findComponent({ name: 'Hello' }).html()) 
+  //   console.log(wrapper.findComponent({ name: 'Hello' }).props())
+  //   console.log(wrapper.findComponent({ name: 'Hello' }).html())
   //   // !通过name还可以找到子组件(也是wrapper)，wrapper用mount，显示<div class="hello"><h1>defaultMsg</h1></div>
   //   // !wrapper用shallowMount，显示<hello-stub msg="defaultMsg"></hello-stub>
 
@@ -64,29 +68,65 @@ describe('HelloWorld.vue', () => {
   // })
 
   it('click', async () => {
-    const todoContent = 'buy milk'
+    const todoContent = 'buy milk';
     const msg = 'new message';
     const wrapper = shallowMount(HelloWorld, {
       props: { msg }
     });
-    await wrapper.get('input').setValue(todoContent)
-    expect(wrapper.get('input').element.value).toBe(todoContent)
-    await wrapper.get('.addTodo').trigger('click')
-    //expect(wrapper.findAll('li').length).toBe(1)
-    expect(wrapper.findAll('li')).toHaveLength(1)
-    expect(wrapper.findAll('li')[0].text()).toBe(todoContent)
-    console.log(wrapper.emitted())
+    await wrapper.get('input').setValue(todoContent);
+    expect(wrapper.get('input').element.value).toBe(todoContent);
+    await wrapper.get('.addTodo').trigger('click');
+    // expect(wrapper.findAll('li').length).toBe(1)
+    expect(wrapper.findAll('li')).toHaveLength(1);
+    expect(wrapper.findAll('li')[0].text()).toBe(todoContent);
+    console.log(wrapper.emitted());
     /*
       {
-        send: [ [ 'buy milk' ] ],       
+        send: [ [ 'buy milk' ] ],
       }
     */
     // 断言事件已经被触发
-    expect(wrapper.emitted().send).toBeTruthy()
-    expect(wrapper.emitted()).toHaveProperty('send')
+    expect(wrapper.emitted().send).toBeTruthy();
+    expect(wrapper.emitted()).toHaveProperty('send');
     // 断言事件的数量
-    expect(wrapper.emitted().send.length).toBe(1)
+    expect(wrapper.emitted().send.length).toBe(1);
     // 断言事件的数量
-    expect(wrapper.emitted().send[0]).toEqual([todoContent]) // !数组、对象等引用类型的比较 用toEqual
-  })
+    expect(wrapper.emitted().send[0]).toEqual([todoContent]); // !数组、对象等引用类型的比较 用toEqual
+
+    console.log(wrapper.emitted('send')); // [ [ 'buy milk' ] ]
+    expect(wrapper.emitted('send')![0]).toEqual([todoContent]);
+  });
+  // !比如有多个测试用例，only的意思是只进行当前测试用例
+  it('ajax', async () => { // it.only
+    const msg = 'new message';
+    const wrapper = shallowMount(HelloWorld, {
+      props: { msg }
+    });
+    mockAxios.get.mockResolvedValueOnce({ data: { username: 'j-king' } });
+    await wrapper.get('.loadUser').trigger('click');
+    expect(mockAxios.get).toHaveBeenCalled(); // 是否被调用
+    expect(wrapper.find('.loading').exists()).toBeTruthy();
+    expect(wrapper.get('.loading')).toBeTruthy();
+    await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
+    // !界面更新完毕
+    expect(wrapper.find('.loading').exists()).toBeFalsy();
+    expect(wrapper.find('.user-name').text()).toBe('j-king');
+    expect(wrapper.find('.error').exists()).toBeFalsy();
+  });
+
+  it.only('ajax', async () => {
+    const msg = 'new message';
+    const wrapper = shallowMount(HelloWorld, {
+      props: { msg }
+    });
+    mockAxios.get.mockRejectedValueOnce({ data: null }); // !reject
+    await wrapper.get('.loadUser').trigger('click');
+    expect(mockAxios.get).toHaveBeenCalled(); // 是否被调用
+    expect(wrapper.find('.loading').exists()).toBeTruthy();
+    expect(wrapper.get('.loading')).toBeTruthy();
+    await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
+    // !界面更新完毕
+    expect(wrapper.find('.loading').exists()).toBeFalsy();
+    expect(wrapper.find('.error').exists()).toBeTruthy();
+  });
 });
