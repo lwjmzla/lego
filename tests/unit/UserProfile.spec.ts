@@ -18,7 +18,15 @@ jest.mock('vue-router', () => ({
   })
 }));
 
-// jest.mock('vuex');
+// const mockedVuex: string[] = [];
+// jest.mock('vuex', () => ({
+//   useStore: () => ({
+//     commit: (a: any) => mockedVuex.push(a)
+//   })
+// }));
+
+jest.useFakeTimers();
+
 const mockComponent = {
   template: '<div><slot></slot></div>'
 };
@@ -61,9 +69,9 @@ describe('UserProfile component', () => {
     expect(wrapper.get('div').text()).toBe('登录');
     expect(wrapper.find('.user-profile-dropdown').exists()).toBeFalsy();
     await wrapper.get('.login-btn').trigger('click');
-    // expect(store.commit).toHaveBeenCalled(); // !报错，toHaveBeenCalled只能mock使用
     expect(message.success).toHaveBeenCalled();
     expect(store.state.user.userName).toBe('lwj'); // !真数据
+    // expect(mockedVuex).toEqual(['login']);
   });
 
   it('测试登录状态当前组件渲染', async () => {
@@ -80,15 +88,15 @@ describe('UserProfile component', () => {
     expect(wrapper.find('.login-btn').exists()).toBeFalsy();
   });
 
-  //  测试行为, 登出按钮点击
-  // it('测试登录状态登出按钮相关行为', async () => {
-  //   await expect(wrapper.get('.logout-btn').trigger('click'));
-  //   expect(store.state.user.isLogin).toBeFalsy();
-  //   expect(message.success).toBeCalled();
-  //   expect(message.success).toBeCalledTimes(1); //  测试 message.success 调用次数
-  //   jest.runAllTimers(); //  运行所有 timer
-  //   expect(mockedRoutes).toEqual(['/']);
-  // });
+  //  测试登出按钮点击
+  it('测试登出按钮点击', async () => {
+    await wrapper.get('.logout-btn').trigger('click');
+    expect(store.state.user.isLogin).toBeFalsy();
+    expect(message.success).toBeCalled(); // !toBeCalled 和 toHaveBeenCalled 一样的
+    expect(message.success).toBeCalledTimes(1); //  测试 message.success 调用次数
+    jest.runAllTimers(); // ! 运行所有 timer，前提：jest.useFakeTimers()
+    expect(mockedRoutes).toEqual(['/']);
+  });
 
   afterEach(() => {
     //  每个 case 调用完成执行 message.success 方法重置
