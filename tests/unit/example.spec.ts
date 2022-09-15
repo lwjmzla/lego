@@ -12,6 +12,10 @@ const mockAxios = axios as jest.Mocked<typeof axios>; //! 添加类型，提供�
 */
 
 describe('HelloWorld.vue', () => {
+  // !在每个测试用例之后执行一次
+  afterEach(() => {
+    mockAxios.get.mockReset(); // !可以使get请求次数重置到初始值 0
+  });
   // it('renders props.msg when passed', () => {
   //   const msg = 'new message';
   //   const wrapper = mount(HelloWorld, { // !mount是完整加载(但是遇到异步的话，怎么处理？)， shallowMount是表层加载，如果HelloWorld组件里另外有别的组件引用，就不会加载
@@ -67,7 +71,7 @@ describe('HelloWorld.vue', () => {
   //   console.log(wrapper.vm.count)
   // })
 
-  it('click', async () => {
+  it('click && emitted', async () => {
     const todoContent = 'buy milk';
     const msg = 'new message';
     const wrapper = shallowMount(HelloWorld, {
@@ -96,8 +100,9 @@ describe('HelloWorld.vue', () => {
     console.log(wrapper.emitted('send')); // [ [ 'buy milk' ] ]
     expect(wrapper.emitted('send')![0]).toEqual([todoContent]);
   });
+
   // !比如有多个测试用例，only的意思是只进行当前测试用例
-  it('ajax', async () => { // it.only
+  it('ajax mockResolvedValueOnce', async () => { // !it.only
     const msg = 'new message';
     const wrapper = shallowMount(HelloWorld, {
       props: { msg }
@@ -105,6 +110,7 @@ describe('HelloWorld.vue', () => {
     mockAxios.get.mockResolvedValueOnce({ data: { username: 'j-king' } });
     await wrapper.get('.loadUser').trigger('click');
     expect(mockAxios.get).toHaveBeenCalled(); // 是否被调用
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
     expect(wrapper.find('.loading').exists()).toBeTruthy();
     expect(wrapper.get('.loading')).toBeTruthy();
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
@@ -114,7 +120,7 @@ describe('HelloWorld.vue', () => {
     expect(wrapper.find('.error').exists()).toBeFalsy();
   });
 
-  it.only('ajax', async () => {
+  it('ajax mockRejectedValueOnce', async () => {
     const msg = 'new message';
     const wrapper = shallowMount(HelloWorld, {
       props: { msg }
@@ -122,6 +128,7 @@ describe('HelloWorld.vue', () => {
     mockAxios.get.mockRejectedValueOnce({ data: null }); // !reject
     await wrapper.get('.loadUser').trigger('click');
     expect(mockAxios.get).toHaveBeenCalled(); // 是否被调用
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
     expect(wrapper.find('.loading').exists()).toBeTruthy();
     expect(wrapper.get('.loading')).toBeTruthy();
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
