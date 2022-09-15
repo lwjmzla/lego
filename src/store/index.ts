@@ -25,6 +25,6 @@ export default createStore({
     template,
     user
   },
-  strict: !IS_PROD,
-  plugins: IS_PROD ? [] : [createLogger()]
+  strict: !IS_PROD
+  // plugins: IS_PROD ? [] : [createLogger()]
 });
