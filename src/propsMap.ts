@@ -108,5 +108,9 @@ export const mapPropsToForm: PropsToForm = {
       ...fontFamilyOptions
       // ...fontFamilyArr
     ]
+  },
+  color: {
+    text: '字体颜色',
+    component: 'ColorPicker'
   }
 };

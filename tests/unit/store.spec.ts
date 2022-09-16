@@ -1,11 +1,12 @@
-// import { clone, last } from 'lodash-es';
+import { clone, last } from 'lodash-es';
 import { testComponents, ComponentData } from '@/store/editor';
 import { TextComponentProps } from '@/defaultProps';
 // import { testData } from '@/store/templates';
 import store from '@/store';
 // !没有wrapper(界面)的单元测试
 
-const cloneComponents = JSON.parse(JSON.stringify(testComponents)) as ComponentData[];
+// const cloneComponents = JSON.parse(JSON.stringify(testComponents)) as ComponentData[];
+const cloneComponents = clone(testComponents);
 
 describe('test vuex module', () => {
   it('测试需要的三个模块', () => {
@@ -57,7 +58,8 @@ describe('test vuex module', () => {
       };
       store.commit('addComponent', payload);
       expect(store.state.editor.components).toHaveLength(cloneComponents.length + 1);
-      const lastItem = store.state.editor.components[store.state.editor.components.length - 1];
+      // const lastItem = store.state.editor.components[store.state.editor.components.length - 1];
+      const lastItem = last(store.state.editor.components);
       expect(lastItem?.props.text).toBe('test1');
     });
     it('测试画布中元素属性更新', () => {

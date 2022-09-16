@@ -34,6 +34,7 @@ import { TextComponentProps } from '@/defaultProps';
 import { mapPropsToForm, PropToForm, PropsToForm } from '@/propsMap';
 import { reduce } from 'lodash-es';
 import RenderVnode from '@/components/renderVnode';
+import ColorPicker from '@/components/ColorPicker.vue'; // !component的is为string的时候，组件需要显式注册
 
 const props = defineProps({
   props: {
@@ -72,6 +73,11 @@ const finalProps = computed(() => {
   }, {} as PropsToForm);
 });
 
+</script>
+<script lang="ts">
+export default {
+  components: { ColorPicker }
+};
 </script>
 
 <style scoped>
