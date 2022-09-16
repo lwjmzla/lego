@@ -76,7 +76,8 @@ module.exports = {
       multiline: {
         max: 1
       }
-    }]
+    }],
+    'import/first': 'off'
   },
 
   overrides: [
