@@ -2,24 +2,57 @@
   <div class="home">
     home
     <ColorPicker value="#000000" @change="colorChange"></ColorPicker>
+    <Uploader />
+    <div>
+      <form method="post" enctype="multipart/form-data" action="https://uat-openapi.ibaibu.com/api/file/upload">
+        <input type="file"
+          name="files"
+          multiple
+          @change="onFileChange"
+        />
+        <input type="text" name="test" />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, getCurrentInstance } from 'vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import axios from 'axios';
+import Uploader from '@/components/Uploader.vue';
 
 export default defineComponent({
   name: 'Home',
   components: {
-    ColorPicker
+    ColorPicker,
+    Uploader
   },
   setup () {
     const colorChange = (val: string) => {
       console.log(val);
     };
+    const onFileChange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const files = target.files;
+      console.log(files);
+      if (!files) { return; }
+      const formData = new FormData();
+      formData.append('files', files[0]);
+      axios({
+        url: 'https://uat-openapi.ibaibu.com/api/file/upload',
+        method: 'post',
+        data: formData,
+        params: {},
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    };
     return {
-      colorChange
+      colorChange,
+      onFileChange
     };
   }
 });

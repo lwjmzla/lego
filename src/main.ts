@@ -13,6 +13,7 @@ import 'ant-design-vue/dist/antd.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 const app = createApp(App);
+
 app.use(store, key).use(router);
 app.use(ElementPlus as any);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
