@@ -65,3 +65,20 @@ describe('Uploader Component', () => {
     mockAxios.post.mockReset();
   });
 });
+
+interface A {
+  name: string;
+  age: number
+}
+export interface AInstance extends A {
+  (config: string): string;
+}
+
+let a: AInstance;
+
+type B = typeof a
+type Beautify<T> = {
+  [P in keyof T]: T[P]
+}
+
+type C = Beautify<B> // ! AInstance的函数类型被无视掉了。。。
