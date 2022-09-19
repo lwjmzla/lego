@@ -35,8 +35,7 @@ export default defineComponent({
     const colorPicker = ref<HTMLElement | null>(null);
 
     const inputProps = {
-      // type: 'color',
-      value: props.value,
+      // value: props.value, // !props.value响应式的值要放在JSX里，放在这里则只是静态值
       onInput: onChange
     };
 
@@ -49,6 +48,7 @@ export default defineComponent({
         <input ref={colorPicker}
           type="color"
           {...inputProps}
+          value={props.value}
         />
         <ul class="color-wrapper">
         {

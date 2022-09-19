@@ -6,7 +6,7 @@ import { mapPropsToForm, PropToForm, PropsToForm } from '@/propsMap';
 import { reduce } from 'lodash-es';
 // import RenderVnode from '@/components/renderVnode';
 import { Input, InputNumber, Slider, Radio, Select } from 'ant-design-vue';
-import ColorPicker from '@/components/ColorPicker.vue';
+import ColorPicker from '@/components/ColorPickerTsx.vue';
 import IconSwitch from '@/components/IconSwitchTsx.vue';
 const mapToComponent = {
   'a-textarea': Input.TextArea,

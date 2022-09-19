@@ -38,8 +38,17 @@ describe('Uploader Component', () => {
     // expect(mockAxios.post).toHaveBeenCalledTimes(1);
     expect(mockAxios).toHaveBeenCalledTimes(1);
     expect(wrapper.find('button span').text()).toBe('正在上传');
+    console.log(wrapper.find('button').attributes()); //! { disabled: '' } 并不是true
+    // expect(wrapper.find('button').attributes('disabled')).toBeTruthy();
+    expect(wrapper.find('button').attributes()).toHaveProperty('disabled');
+    expect(wrapper.findAll('li').length).toBe(1);
+    const firstItem = wrapper.get('li:first-child');
+    expect(firstItem.classes()).toContain('upload-loading');
+
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
-    expect(wrapper.find('button span').text()).toBe('上传成功');
+    expect(wrapper.find('button span').text()).toBe('点击上传');
+    expect(firstItem.classes()).toContain('upload-success');
+    expect(firstItem.get('.filename').text()).toBe(testFile.name);
   });
 
   it('should return error text when post is rejected', async () => {
@@ -54,8 +63,16 @@ describe('Uploader Component', () => {
     await wrapper.get('input').trigger('change');
     expect(mockAxios).toHaveBeenCalledTimes(1);
     expect(wrapper.find('button span').text()).toBe('正在上传');
+    expect(wrapper.find('button').attributes()).toHaveProperty('disabled');
+    expect(wrapper.findAll('li').length).toBe(2);
+    const lastItem = wrapper.get('li:last-child');
+    expect(lastItem.classes()).toContain('upload-loading');
+
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
-    expect(wrapper.find('button span').text()).toBe('上传失败');
+    expect(wrapper.find('button span').text()).toBe('点击上传');
+    expect(lastItem.classes()).toContain('upload-error');
+    await lastItem.find('.delete-icon').trigger('click');
+    expect(wrapper.findAll('li').length).toBe(1);
   });
 
   afterEach(() => {

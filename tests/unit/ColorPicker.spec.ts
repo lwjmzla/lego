@@ -40,6 +40,8 @@ describe('测试 color-picker 组件', () => {
     expect(`#${rgbHex(firstItem.style.backgroundColor)}`).toBe(defaultColors[0]); // !浏览器自动转换成rgb格式，rgbHex实现 bgColor: rgb(255, 255, 255) => fff
     const lastItem = wrapper.get('li:last-child div').element as HTMLElement;
     expect(lastItem.classList.contains('transperent-back')).toBeTruthy(); // !classList为 "[object DOMTokenList]"伪数组类型，所以不含数组方法includes
+    const lastItemDiv = wrapper.get('li:last-child div');
+    expect(lastItemDiv.classes()).toContain('transperent-back'); // !对class判断的另外方式
   });
 
   it('测试 input 值变更行为', async () => {
