@@ -30,8 +30,9 @@
 
 <script lang="ts">
 import ColorPicker from '@/components/ColorPicker.vue'; // !component的is为string的时候，组件需要显式注册
+import IconSwitch from '@/components/IconSwitch.vue';
 export default {
-  components: { ColorPicker }
+  components: { ColorPicker, IconSwitch }
 };
 </script>
 <script lang="ts" setup>

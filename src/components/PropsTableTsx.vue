@@ -7,6 +7,7 @@ import { reduce } from 'lodash-es';
 // import RenderVnode from '@/components/renderVnode';
 import { Input, InputNumber, Slider, Radio, Select } from 'ant-design-vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import IconSwitch from '@/components/IconSwitchTsx.vue';
 const mapToComponent = {
   'a-textarea': Input.TextArea,
   'a-input-number': InputNumber,
@@ -15,7 +16,8 @@ const mapToComponent = {
   'a-radio-button': Radio.Button,
   'a-select': Select,
   'a-select-option': Select.Option,
-  ColorPicker
+  ColorPicker,
+  IconSwitch
 } as any;
 
 function capitalizeFirstLetter (string: string) {

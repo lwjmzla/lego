@@ -112,5 +112,35 @@ export const mapPropsToForm: PropsToForm = {
   color: {
     text: '字体颜色',
     component: 'ColorPicker'
+  },
+  fontWeight: {
+    text: '加粗',
+    extraProps: {
+      text: 'B',
+      promptText: '加粗'
+    },
+    component: 'IconSwitch',
+    initialTransForm: (val: string) => val === 'bold' ? '' : 'normal', // !只有匹配 bold 才高亮，其他都是normal
+    afterTransForm: (val: string) => val === 'actived' ? 'bold' : 'normal'
+  },
+  fontStyle: {
+    text: '斜体',
+    extraProps: {
+      text: '/',
+      promptText: '斜体'
+    },
+    component: 'IconSwitch',
+    initialTransForm: (val: string) => val === 'italic' ? '' : 'normal', // !只有匹配 italic 才高亮，其他都是normal
+    afterTransForm: (val: string) => val === 'actived' ? 'italic' : 'normal'
+  },
+  textDecoration: {
+    text: '下划线',
+    extraProps: {
+      text: '_',
+      promptText: '下划线'
+    },
+    component: 'IconSwitch',
+    initialTransForm: (val: string) => val === 'underline' ? '' : 'normal', // !只有匹配 underline 才高亮，其他都是normal
+    afterTransForm: (val: string) => val === 'actived' ? 'underline' : 'none'
   }
 };

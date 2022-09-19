@@ -3,8 +3,9 @@ import Uploader from '@/components/Uploader.vue';
 import axios from 'axios';
 import flushPromises from 'flush-promises';
 jest.mock('axios');
-// todo 添加mockAxios自身对jest.Mock 的支持。
-const mockAxios = axios as jest.Mocked<typeof axios>;
+// const mockAxios = axios as jest.Mocked<typeof axios>; // !mockAxios.post、get之类才用这种
+const mockAxios = axios as unknown as jest.Mock;
+
 let wrapper: VueWrapper<any>;
 const testFile = new File(['xyz'], 'test.png', { type: 'image/png' });
 
@@ -25,7 +26,6 @@ describe('Uploader Component', () => {
 
   it('upload process should works fine', async () => {
     // mockAxios.post.mockResolvedValueOnce({ status: 'success' });
-    // @ts-ignore
     mockAxios.mockResolvedValueOnce({ status: 'success' });
     const fileInput = wrapper.get('input').element as HTMLInputElement;
     const files = [testFile];
@@ -43,7 +43,6 @@ describe('Uploader Component', () => {
   });
 
   it('should return error text when post is rejected', async () => {
-    // @ts-ignore
     mockAxios.mockRejectedValueOnce({ status: 'error' });
     // !ps:fileInput的'files'属性，已在上面被 Object.defineProperty处理过了，不需要重复处理，否则会报错
     // const fileInput = wrapper.get('input').element as HTMLInputElement;
@@ -60,9 +59,8 @@ describe('Uploader Component', () => {
   });
 
   afterEach(() => {
-    // @ts-ignore
     mockAxios.mockReset();
-    mockAxios.post.mockReset();
+    // mockAxios.post.mockReset();
   });
 });
 
