@@ -9,18 +9,40 @@ const mockAxios = axios as unknown as jest.Mock;
 let wrapper: VueWrapper<any>;
 const testFile = new File(['xyz'], 'test.png', { type: 'image/png' });
 
+const mockComponent = {
+  template: '<div><slot></slot></div>'
+};
+const mockComponents = {
+  DeleteOutlined: mockComponent,
+  LoadingOutlined: mockComponent,
+  FileOutlined: mockComponent
+};
+
+const setInputValue = (input: HTMLInputElement, file = testFile) => {
+  const files = [file] as any;
+  Object.defineProperty(input, 'files', {
+    value: files,
+    writable: false
+  });
+};
+
 describe('Uploader Component', () => {
   beforeAll(() => {
     wrapper = shallowMount(Uploader, {
       props: {
         action: 'test.url'
+      },
+      global: {
+        //  使用全局组件
+        // components: mockComponents,
+        stubs: mockComponents // !stubs:当前引入的组件的意思
       }
     });
   });
   it('basic layout before uploading', () => {
     expect(wrapper.find('button').exists()).toBeTruthy();
-    // expect(wrapper.find('button span').element.textContent).toBe('点击上传');
-    expect(wrapper.find('button span').text()).toBe('点击上传');
+    // expect(wrapper.find('button').element.textContent).toBe('点击上传');
+    expect(wrapper.find('button').text()).toBe('点击上传');
     expect(wrapper.find('input').isVisible()).toBeFalsy();
   });
 
@@ -28,16 +50,17 @@ describe('Uploader Component', () => {
     // mockAxios.post.mockResolvedValueOnce({ status: 'success' });
     mockAxios.mockResolvedValueOnce({ status: 'success' });
     const fileInput = wrapper.get('input').element as HTMLInputElement;
-    const files = [testFile];
+    // const files = [testFile];
     // fileInput.files = files; // !ts报错：类型 "File[]" 中缺少属性 "item"，但类型 "FileList" 中需要该属性--其实就是说fileInput.files不是普通的file数组
-    Object.defineProperty(fileInput, 'files', {
-      value: files,
-      writable: false
-    });
+    // Object.defineProperty(fileInput, 'files', {
+    //   value: files,
+    //   writable: false
+    // });
+    setInputValue(fileInput);
     await wrapper.get('input').trigger('change');
     // expect(mockAxios.post).toHaveBeenCalledTimes(1);
     expect(mockAxios).toHaveBeenCalledTimes(1);
-    expect(wrapper.find('button span').text()).toBe('正在上传');
+    expect(wrapper.find('button').text()).toBe('正在上传');
     console.log(wrapper.find('button').attributes()); //! { disabled: '' } 并不是true
     // expect(wrapper.find('button').attributes('disabled')).toBeTruthy();
     expect(wrapper.find('button').attributes()).toHaveProperty('disabled');
@@ -46,7 +69,7 @@ describe('Uploader Component', () => {
     expect(firstItem.classes()).toContain('upload-loading');
 
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
-    expect(wrapper.find('button span').text()).toBe('点击上传');
+    expect(wrapper.find('button').text()).toBe('点击上传');
     expect(firstItem.classes()).toContain('upload-success');
     expect(firstItem.get('.filename').text()).toBe(testFile.name);
   });
@@ -55,24 +78,59 @@ describe('Uploader Component', () => {
     mockAxios.mockRejectedValueOnce({ status: 'error' });
     // !ps:fileInput的'files'属性，已在上面被 Object.defineProperty处理过了，不需要重复处理，否则会报错
     // const fileInput = wrapper.get('input').element as HTMLInputElement;
-    // const files = [testFile];
-    // Object.defineProperty(fileInput, 'files', {
-    //   value: files,
-    //   writable: false
-    // });
+    // setInputValue(fileInput)
     await wrapper.get('input').trigger('change');
     expect(mockAxios).toHaveBeenCalledTimes(1);
-    expect(wrapper.find('button span').text()).toBe('正在上传');
+    expect(wrapper.find('button').text()).toBe('正在上传');
     expect(wrapper.find('button').attributes()).toHaveProperty('disabled');
     expect(wrapper.findAll('li').length).toBe(2);
     const lastItem = wrapper.get('li:last-child');
     expect(lastItem.classes()).toContain('upload-loading');
 
     await flushPromises(); // !使用flushPromises将所有Promise pending状态都改为完成
-    expect(wrapper.find('button span').text()).toBe('点击上传');
+    expect(wrapper.find('button').text()).toBe('点击上传');
     expect(lastItem.classes()).toContain('upload-error');
     await lastItem.find('.delete-icon').trigger('click');
     expect(wrapper.findAll('li').length).toBe(1);
+  });
+
+  it('should show the correct interface when using custom slot', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    mockAxios.mockResolvedValueOnce({ data: { url: 'xyz.url' } });
+    const wrapper = mount(Uploader, {
+      props: {
+        action: 'test.url'
+      },
+      slots: { // !这里相当于父组件调用Uploader.vue传的slots
+        // default: '<button>Custom button</button>',
+        // loading: '<div class="loading">custom loading</div>',
+        default: `<template #default>
+          <button>Custom button</button>
+        </template>`,
+        loading: `<template #loading>
+        <div class="loading">custom loading</div>
+        </template>`,
+        // !作用域插槽 scoped slot
+        uploaded: `<template #uploaded="{ uploadedData }">
+          <div class="custom-loaded">{{uploadedData.url}}</div>
+        </template>`
+      },
+      global: {
+        stubs: mockComponents
+      }
+    });
+    expect(wrapper.get('button').text()).toBe('Custom button');
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    expect(wrapper.get('.loading').text()).toBe('custom loading');
+    await flushPromises();
+    expect(wrapper.get('.custom-loaded').text()).toBe('dummy.url');
+
+    await wrapper.get('input').trigger('change'); // !再选一次文件
+    expect(wrapper.get('.loading').text()).toBe('custom loading');
+    await flushPromises();
+    expect(wrapper.get('.custom-loaded').text()).toBe('xyz.url');
   });
 
   afterEach(() => {

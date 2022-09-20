@@ -2,7 +2,24 @@
   <div class="home">
     home
     <ColorPicker value="#000000" @change="colorChange"></ColorPicker>
-    <Uploader />
+    <Uploader>
+      <template #default>
+        <button>Custom button</button>
+      </template>
+      <template #loading>
+        <div class="loading">custom loading</div>
+      </template>
+      <template #uploaded="{ uploadedData }">
+        <div class="custom-loaded">
+          {{uploadedData.data}}
+          <ul v-if="uploadedData.data && uploadedData.data.length">
+            <li v-for="(item,index) in uploadedData.data" :key="index">
+              <img :src="item.url" />
+            </li>
+          </ul>
+        </div>
+      </template>
+    </Uploader>
     <div>
       <form method="post" enctype="multipart/form-data" action="https://uat-openapi.ibaibu.com/api/file/upload">
         <input type="file"
