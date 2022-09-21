@@ -1,10 +1,9 @@
 <template>
   <div class="file-input">
-    <!-- <button @click="triggerUpload" :disabled="isUploading">
-      <span v-if="isUploading">正在上传</span>
-      <span v-else>点击上传</span>
-    </button> -->
-    <div class="upload-area" @click="triggerUpload">
+    <div class="upload-area"
+      :class="{'is-dragover': drag && isDragOver }"
+      v-on="events"
+    >
       <slot v-if="isUploading" name="loading">
         <button disabled>正在上传</button>
       </slot>
@@ -74,11 +73,16 @@ const props = defineProps({
   showUploadList: {
     type: Boolean,
     default: true
+  },
+  drag: {
+    type: Boolean,
+    default: false
   }
 });
 
 const fileInput = ref<null | HTMLInputElement>(null);
 const uploadedFiles = ref<UploadFile[]>([]);
+const isDragOver = ref(false);
 const isUploading = computed(() => {
   return uploadedFiles.value.some(file => file.status === 'loading');
 });
@@ -130,9 +134,7 @@ const postFile = async (file: File) => {
   }
 };
 
-const handleFileChange = async (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const files = target.files;
+const uploadFiles = async (files: null | FileList) => {
   console.log(files);
   if (!files) { return; }
   const file = files[0];
@@ -160,10 +162,40 @@ const handleFileChange = async (e: Event) => {
   }
 };
 
+const handleFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const files = target.files;
+  uploadFiles(files);
+};
+
 const triggerUpload = () => {
   if (!fileInput.value) { return; }
   fileInput.value.click();
 };
+
+let events: { [key: string]: (e: any) => void } = {
+  click: triggerUpload
+};
+
+const handleDrag = (e: DragEvent, over: boolean) => {
+  e.preventDefault();
+  isDragOver.value = over;
+};
+const handleDrop = (e: DragEvent) => {
+  e.preventDefault();
+  isDragOver.value = false;
+  if (e.dataTransfer) {
+    uploadFiles(e.dataTransfer.files);
+  }
+};
+if (props.drag) {
+  events = {
+    ...events,
+    dragover: (e: DragEvent) => { handleDrag(e, true); },
+    dragleave: (e: DragEvent) => { handleDrag(e, false); },
+    drop: handleDrop
+  };
+}
 
 const removeFile = (id: string) => {
   uploadedFiles.value = uploadedFiles.value.filter(file => file.uid !== id);
@@ -240,5 +272,59 @@ const removeFile = (id: string) => {
       display: block;
     }
   }
+}
+
+.upload-file {
+  position: relative;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+  padding: 0 20px 0 0 ;
+}
+.upload-file:hover {
+  background-color: #eee;
+}
+.upload-file:hover .del-icon {
+  display: block;
+}
+.upload-success span {
+  color: #42b983;
+}
+.upload-fail span {
+  color: crimson;
+}
+.upload-uploading span {
+  color: sandybrown;
+}
+.icon {
+  margin-right: 10px;
+}
+.del-icon {
+  display: none;
+  position: absolute;
+  right: 0;
+}
+.file-upload {
+  display: inline-block;
+}
+.drag-area {
+  cursor: pointer;
+  width: 300px;
+  border: 1px dashed #999;
+  height: 150px;
+  background-color: #fafafa
+}
+.drag-area:hover {
+  border: 1px dashed #1890ff;
+}
+.is-dragover {
+  border: 1px dashed #1890ff;
+  background-color: rgba(24, 144, 255, 0.2);
+}
+.upload-img-thumb {
+  display: inline-block;
+  width: 75px;
+  height: 75px;
 }
 </style>

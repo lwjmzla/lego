@@ -2,7 +2,7 @@
   <div class="home">
     home
     <ColorPicker value="#000000" @change="colorChange"></ColorPicker>
-    <Uploader>
+    <Uploader drag>
       <template #default>
         <button>Custom button</button>
       </template>
