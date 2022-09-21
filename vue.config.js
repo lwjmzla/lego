@@ -14,5 +14,6 @@ module.exports = defineConfig({
     // 别名
     config.resolve.alias
       .set('@', resolve('src'));
-  }
+  },
+  devServer: { allowedHosts: ['.youbaobao.xyz', '.ibaibu.com'] }
 });

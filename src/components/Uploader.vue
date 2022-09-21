@@ -21,7 +21,7 @@
       style="display: none;"
       @change="handleFileChange"
     />
-    <ul>
+    <ul v-if="showUploadList">
       <li :class="`uploaded-file upload-${file.status}`"
         v-for="file in uploadedFiles"
         :key="file.uid"
@@ -52,11 +52,12 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { defineProps, reactive, ref, computed } from 'vue';
+import { defineProps, reactive, ref, computed, PropType } from 'vue';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { last } from 'lodash-es';
+type CheckUpload = (file: File) => boolean | Promise<File>
 
 const props = defineProps({
   action: {
@@ -66,6 +67,13 @@ const props = defineProps({
   accept: {
     type: String,
     default: 'image/png,image/jpeg'
+  },
+  beforeUpload: {
+    type: Function as PropType<CheckUpload>
+  },
+  showUploadList: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -85,20 +93,15 @@ const lastFileData = computed(() => {
   return false;
 });
 
-const handleFileChange = async (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const files = target.files;
-  console.log(files);
-  if (!files) { return; }
-  const uploadedFile = files[0];
+const postFile = async (file: File) => {
   const formData = new FormData();
-  formData.append('files', uploadedFile);
+  formData.append('files', file);
   const fileObj = reactive<UploadFile>({
     uid: uuidv4(),
-    size: uploadedFile.size,
-    name: uploadedFile.name,
+    size: file.size,
+    name: file.name,
     status: 'loading',
-    raw: uploadedFile
+    raw: file
   });
   uploadedFiles.value.push(fileObj);
   try {
@@ -124,6 +127,36 @@ const handleFileChange = async (e: Event) => {
     fileObj.status = 'error';
   } finally {
     fileInput.value!.value = '';
+  }
+};
+
+const handleFileChange = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const files = target.files;
+  console.log(files);
+  if (!files) { return; }
+  const file = files[0];
+  try {
+    if (props.beforeUpload) {
+      const result = props.beforeUpload(file);
+      if (typeof result === 'boolean') {
+        console.log(result);
+        result && postFile(file);
+      } else {
+        console.log(result);
+        const processedFile = await result;
+        // if (Object.prototype.toString.call(processedFile) !== '[object File]') { return; }
+        if (processedFile instanceof File) {
+          postFile(processedFile);
+        } else {
+          throw new Error('beforeUpload返回的promise不是文件类型');
+        }
+      }
+    } else {
+      postFile(file);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

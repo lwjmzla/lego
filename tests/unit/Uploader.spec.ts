@@ -133,6 +133,95 @@ describe('Uploader Component', () => {
     expect(wrapper.get('.custom-loaded').text()).toBe('xyz.url');
   });
 
+  it('before upload check', async () => {
+    const callback = jest.fn();
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const checkFileSize = (file: File) => {
+      console.log(file.size);
+      if (file.size > 2) {
+        callback();
+        return false;
+      }
+      return true;
+    };
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        beforeUpload: checkFileSize
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    expect(mockAxios).not.toHaveBeenCalled();
+    expect(wrapper.findAll('li').length).toBe(0);
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it('before upload check using Promise -- successPromise', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const successPromise = (file: File) => {
+      const newFile = new File([file], 'new_name.docx', { type: file.type });
+      return Promise.resolve(newFile);
+    };
+
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        beforeUpload: successPromise
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    await flushPromises();
+    expect(mockAxios).toHaveBeenCalled();
+    expect(wrapper.findAll('li').length).toBe(1);
+    const firstItem = wrapper.get('li:first-child');
+    expect(firstItem.classes()).toContain('upload-success');
+    expect(firstItem.get('li:first-child .filename').text()).toBe('new_name.docx');
+  });
+
+  it('before upload check using Promise -- successPromiseWithWrongType', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const successPromiseWithWrongType = () => {
+      return Promise.resolve('abcd');
+    };
+
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        beforeUpload: successPromiseWithWrongType
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    await flushPromises();
+    expect(mockAxios).not.toHaveBeenCalled();
+    expect(wrapper.findAll('li').length).toBe(0);
+  });
+
+  it('before upload check using Promise -- failedPromise', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const failedPromise = (file: File) => {
+      return Promise.reject('wrong type');
+    };
+
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        beforeUpload: failedPromise
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    await flushPromises();
+    expect(mockAxios).not.toHaveBeenCalled();
+    expect(wrapper.findAll('li').length).toBe(0);
+  });
+
   afterEach(() => {
     mockAxios.mockReset();
     // mockAxios.post.mockReset();
