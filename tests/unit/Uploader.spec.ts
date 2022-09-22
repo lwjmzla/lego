@@ -222,6 +222,29 @@ describe('Uploader Component', () => {
     expect(wrapper.findAll('li').length).toBe(0);
   });
 
+  it.only('testing drag and drop function', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        drag: true
+      }
+    });
+    const uploadArea = wrapper.get('.upload-area');
+    await uploadArea.trigger('dragover');
+    expect(uploadArea.classes()).toContain('is-dragover');
+    await uploadArea.trigger('dragleave');
+    expect(uploadArea.classes()).not.toContain('is-dragover');
+    await uploadArea.trigger('drop', { dataTransfer: { files: [testFile] } });
+    /*
+      await wrapper.get('input').trigger('change', { target: { files: [testFile] } }); // !这种不行，you cannot set the target value of an event
+      !只能像setInputValue(fileInput)的方式给元素添加files,类似wrapper.get('input').element.files = [testFile];
+    */
+    expect(mockAxios).toHaveBeenCalled();
+    await flushPromises();
+    expect(wrapper.findAll('li').length).toBe(1);
+  });
+
   afterEach(() => {
     mockAxios.mockReset();
     // mockAxios.post.mockReset();
