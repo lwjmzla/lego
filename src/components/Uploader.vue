@@ -22,7 +22,7 @@
     />
     <ul v-if="showUploadList">
       <li :class="`uploaded-file upload-${file.status}`"
-        v-for="file in uploadedFiles"
+        v-for="file in filesList"
         :key="file.uid"
       >
         <span v-if="file.status === 'loading'" class="file-icon"><LoadingOutlined /></span>
@@ -70,6 +70,10 @@ const props = defineProps({
   beforeUpload: {
     type: Function as PropType<CheckUpload>
   },
+  autoUpload: {
+    type: Boolean,
+    default: true
+  },
   showUploadList: {
     type: Boolean,
     default: true
@@ -81,13 +85,13 @@ const props = defineProps({
 });
 
 const fileInput = ref<null | HTMLInputElement>(null);
-const uploadedFiles = ref<UploadFile[]>([]);
+const filesList = ref<UploadFile[]>([]);
 const isDragOver = ref(false);
 const isUploading = computed(() => {
-  return uploadedFiles.value.some(file => file.status === 'loading');
+  return filesList.value.some(file => file.status === 'loading');
 });
 const lastFileData = computed(() => {
-  const lastFile = last(uploadedFiles.value);
+  const lastFile = last(filesList.value);
   if (lastFile) {
     return {
       loaded: lastFile.status === 'success',
@@ -97,17 +101,10 @@ const lastFileData = computed(() => {
   return false;
 });
 
-const postFile = async (file: File) => {
+const postFile = async (fileObj: UploadFile) => {
   const formData = new FormData();
-  formData.append('files', file);
-  const fileObj = reactive<UploadFile>({
-    uid: uuidv4(),
-    size: file.size,
-    name: file.name,
-    status: 'loading',
-    raw: file
-  });
-  uploadedFiles.value.push(fileObj);
+  formData.append('files', fileObj.raw);
+  fileObj.status = 'loading';
   try {
     const res = await axios({
       url: props.action,
@@ -134,28 +131,48 @@ const postFile = async (file: File) => {
   }
 };
 
-const uploadFiles = async (files: null | FileList) => {
+const addFileToList = (file: File) => {
+  const fileObj = reactive<UploadFile>({
+    uid: uuidv4(),
+    size: file.size,
+    name: file.name,
+    status: 'ready',
+    raw: file
+  });
+  filesList.value.push(fileObj);
+  if (props.autoUpload) {
+    postFile(fileObj);
+  }
+};
+
+// !提供给父组件调用时使用的，eg: this.$refs.upload.uploadFiles();
+const uploadFiles = () => {
+  // !同时调相同接口，可能会cancel上一个接口，这个可能需要排序逐个上传。
+  filesList.value.filter(file => file.status === 'ready').forEach(readyFile => postFile(readyFile));
+};
+
+const beforeUploadCheck = async (files: null | FileList) => {
   console.log(files);
   if (!files) { return; }
-  const file = files[0];
+  const file = files[0]; // todo 目前只支持1个文件的情况，多个文件下一步支持
   try {
     if (props.beforeUpload) {
       const result = props.beforeUpload(file);
       if (typeof result === 'boolean') {
         console.log(result);
-        result && postFile(file);
+        result && addFileToList(file);
       } else {
         console.log(result);
         const processedFile = await result;
         // if (Object.prototype.toString.call(processedFile) !== '[object File]') { return; }
         if (processedFile instanceof File) {
-          postFile(processedFile);
+          addFileToList(processedFile);
         } else {
           throw new Error('beforeUpload返回的promise不是文件类型');
         }
       }
     } else {
-      postFile(file);
+      addFileToList(file);
     }
   } catch (error) {
     console.log(error);
@@ -165,7 +182,7 @@ const uploadFiles = async (files: null | FileList) => {
 const handleFileChange = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const files = target.files;
-  uploadFiles(files);
+  beforeUploadCheck(files);
 };
 
 const triggerUpload = () => {
@@ -185,7 +202,7 @@ const handleDrop = (e: DragEvent) => {
   e.preventDefault();
   isDragOver.value = false;
   if (e.dataTransfer) {
-    uploadFiles(e.dataTransfer.files);
+    beforeUploadCheck(e.dataTransfer.files);
   }
 };
 if (props.drag) {
@@ -198,8 +215,12 @@ if (props.drag) {
 }
 
 const removeFile = (id: string) => {
-  uploadedFiles.value = uploadedFiles.value.filter(file => file.uid !== id);
+  filesList.value = filesList.value.filter(file => file.uid !== id);
 };
+
+defineExpose({
+  uploadFiles
+});
 
 </script>
 

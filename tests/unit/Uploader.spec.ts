@@ -222,7 +222,7 @@ describe('Uploader Component', () => {
     expect(wrapper.findAll('li').length).toBe(0);
   });
 
-  it.only('testing drag and drop function', async () => {
+  it('testing drag and drop function', async () => {
     mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
     const wrapper = shallowMount(Uploader, {
       props: {
@@ -243,6 +243,29 @@ describe('Uploader Component', () => {
     expect(mockAxios).toHaveBeenCalled();
     await flushPromises();
     expect(wrapper.findAll('li').length).toBe(1);
+  });
+
+  it('testing manual upload process', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        // drag: true,
+        autoUpload: false
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    expect(wrapper.findAll('li').length).toBe(1);
+    expect(mockAxios).not.toHaveBeenCalled();
+    const firstItem = wrapper.get('li:first-child');
+    expect(firstItem.classes()).toContain('upload-ready');
+    // @ts-ignore
+    wrapper.vm.uploadFiles();
+    expect(mockAxios).toHaveBeenCalled();
+    await flushPromises();
+    expect(firstItem.classes()).toContain('upload-success');
   });
 
   afterEach(() => {

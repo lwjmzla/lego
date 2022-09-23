@@ -2,7 +2,7 @@
   <div class="home">
     home
     <ColorPicker value="#000000" @change="colorChange"></ColorPicker>
-    <Uploader drag>
+    <Uploader drag :autoUpload="false" ref="uploader">
       <template #default>
         <button>Custom button</button>
       </template>
@@ -20,6 +20,7 @@
         </div>
       </template>
     </Uploader>
+    <el-button type="primary" @click="handleUpload">手动上传</el-button>
     <div>
       <form method="post" enctype="multipart/form-data" action="https://uat-openapi.ibaibu.com/api/file/upload">
         <input type="file"
@@ -35,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from 'vue';
+import { defineComponent, ref } from 'vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import axios from 'axios';
 import Uploader from '@/components/Uploader.vue';
@@ -47,6 +48,7 @@ export default defineComponent({
     Uploader
   },
   setup () {
+    const uploader = ref<any>(null);
     const colorChange = (val: string) => {
       console.log(val);
     };
@@ -67,9 +69,15 @@ export default defineComponent({
         }
       });
     };
+
+    const handleUpload = () => {
+      uploader.value.uploadFiles();
+    };
     return {
+      uploader,
       colorChange,
-      onFileChange
+      onFileChange,
+      handleUpload
     };
   }
 });
