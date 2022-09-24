@@ -111,8 +111,8 @@ describe('Uploader Component', () => {
         <div class="loading">custom loading</div>
         </template>`,
         // !作用域插槽 scoped slot
-        uploaded: `<template #uploaded="{ uploadedData }">
-          <div class="custom-loaded">{{uploadedData.url}}</div>
+        uploaded: `<template #uploaded="{ lastUploadedData }">
+          <div class="custom-loaded">{{lastUploadedData.url}}</div>
         </template>`
       },
       global: {
@@ -262,11 +262,55 @@ describe('Uploader Component', () => {
     const firstItem = wrapper.get('li:first-child');
     expect(firstItem.classes()).toContain('upload-ready');
     // @ts-ignore
-    wrapper.vm.uploadFiles();
+    wrapper.vm.submit();
     expect(mockAxios).toHaveBeenCalled();
     await flushPromises();
     expect(firstItem.classes()).toContain('upload-success');
   });
+
+  it('PictureList mode should works fine -- URL.createObjectURL', async () => {
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    // !当前jest的模拟函数是基于jsdom库的，包含大多数document、window方法，但小部分没，例如URL.createObjectURL，所以要mock
+    window.URL.createObjectURL = jest.fn(() => {
+      return 'test.url';
+    });
+    const wrapper = mount(Uploader, {
+      props: {
+        action: 'test.url',
+        listType: 'picture'
+      }
+    });
+    expect(wrapper.get('ul').classes()).toContain('upload-list-picture');
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    // await flushPromises();
+    expect(wrapper.findAll('li').length).toBe(1);
+    expect(wrapper.find('li:first-child img').exists()).toBeTruthy();
+    const firstImg = wrapper.get('li:first-child img');
+    expect(firstImg.attributes('src')).toBe('test.url');
+  });
+
+  // todo fileReader mock
+  // it.only('PictureList mode should works fine -- fileReader', async () => {
+  //   mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+
+  //   const wrapper = mount(Uploader, {
+  //     props: {
+  //       action: 'test.url',
+  //       listType: 'picture'
+  //     }
+  //   });
+  //   expect(wrapper.get('ul').classes()).toContain('upload-list-picture');
+  //   const fileInput = wrapper.get('input').element as HTMLInputElement;
+  //   setInputValue(fileInput);
+  //   await wrapper.get('input').trigger('change');
+  //   // await flushPromises()
+  //   expect(wrapper.findAll('li').length).toBe(1);
+  //   expect(wrapper.find('li:first-child img').exists()).toBeTruthy();
+  //   const firstImg = wrapper.get('li:first-child img');
+  //   expect(firstImg.attributes('src')).toBe('test.url');
+  // });
 
   afterEach(() => {
     mockAxios.mockReset();

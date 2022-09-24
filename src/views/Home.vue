@@ -2,18 +2,22 @@
   <div class="home">
     home
     <ColorPicker value="#000000" @change="colorChange"></ColorPicker>
-    <Uploader drag :autoUpload="false" ref="uploader">
+    <Uploader drag
+      :autoUpload="false"
+      listType="picture"
+      ref="uploader"
+    >
       <template #default>
         <button>Custom button</button>
       </template>
       <template #loading>
         <div class="loading">custom loading</div>
       </template>
-      <template #uploaded="{ uploadedData }">
+      <template #uploaded="{ lastUploadedData }">
         <div class="custom-loaded">
-          {{uploadedData.data}}
-          <ul v-if="uploadedData.data && uploadedData.data.length">
-            <li v-for="(item,index) in uploadedData.data" :key="index">
+          {{lastUploadedData.data}}
+          <ul v-if="lastUploadedData.data && lastUploadedData.data.length">
+            <li v-for="(item,index) in lastUploadedData.data" :key="index">
               <img :src="item.url" />
             </li>
           </ul>
@@ -36,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, getCurrentInstance } from 'vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import axios from 'axios';
 import Uploader from '@/components/Uploader.vue';
@@ -48,6 +52,9 @@ export default defineComponent({
     Uploader
   },
   setup () {
+    // const instance = getCurrentInstance()
+    // instance?.proxy?.$refs.uploader
+
     const uploader = ref<any>(null);
     const colorChange = (val: string) => {
       console.log(val);
@@ -71,7 +78,7 @@ export default defineComponent({
     };
 
     const handleUpload = () => {
-      uploader.value.uploadFiles();
+      uploader.value.submit();
     };
     return {
       uploader,

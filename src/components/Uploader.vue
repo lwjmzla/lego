@@ -7,7 +7,7 @@
       <slot v-if="isUploading" name="loading">
         <button disabled>正在上传</button>
       </slot>
-      <slot name="uploaded" v-else-if="lastFileData && lastFileData.loaded" :uploadedData="lastFileData.data">
+      <slot name="uploaded" v-else-if="lastFileData && lastFileData.loaded" :lastUploadedData="lastFileData.data">
         <button>点击上传</button>
       </slot>
       <slot v-else name="default">
@@ -20,11 +20,17 @@
       style="display: none;"
       @change="handleFileChange"
     />
-    <ul v-if="showUploadList">
+    <ul v-if="showUploadList" :class="`upload-list upload-list-${listType}`">
       <li :class="`uploaded-file upload-${file.status}`"
         v-for="file in filesList"
         :key="file.uid"
       >
+        <img
+          v-if="file.url && listType === 'picture'"
+          class="upload-list-thumbnail"
+          :src="file.url"
+          :alt="file.name"
+        >
         <span v-if="file.status === 'loading'" class="file-icon"><LoadingOutlined /></span>
         <span v-else class="file-icon"><FileOutlined /></span>
         <span class="filename">{{file.name}}</span>
@@ -43,8 +49,8 @@ export interface UploadFile {
   name: string;
   status: UploadStaus;
   raw: File;
-  resp?: any;
-  url?: string;
+  resp?: any; // !上传接口返回的数据
+  url?: string; // !URL.createObjectURL(file);
 }
 export default {
 
@@ -81,6 +87,10 @@ const props = defineProps({
   drag: {
     type: Boolean,
     default: false
+  },
+  listType: {
+    type: String as PropType<FileListType>,
+    defualt: 'text'
   }
 });
 
@@ -139,14 +149,28 @@ const addFileToList = (file: File) => {
     status: 'ready',
     raw: file
   });
+  if (props.listType === 'picture') {
+    try {
+      fileObj.url = URL.createObjectURL(file); // !utf16格式
+    } catch (err) {
+      console.error('upload File error', err);
+    }
+
+    // FileReader to preview local image
+    // const fileReader = new FileReader();
+    // fileReader.readAsDataURL(file);
+    // fileReader.addEventListener('load', () => {
+    //   fileObj.url = fileReader.result as string; // !base64
+    // });
+  }
   filesList.value.push(fileObj);
   if (props.autoUpload) {
     postFile(fileObj);
   }
 };
 
-// !提供给父组件调用时使用的，eg: this.$refs.upload.uploadFiles();
-const uploadFiles = () => {
+// !提供给父组件调用时使用的，eg: this.$refs.upload.submit();
+const submit = () => {
   // !同时调相同接口，可能会cancel上一个接口，这个可能需要排序逐个上传。
   filesList.value.filter(file => file.status === 'ready').forEach(readyFile => postFile(readyFile));
 };
@@ -219,7 +243,7 @@ const removeFile = (id: string) => {
 };
 
 defineExpose({
-  uploadFiles
+  submit
 });
 
 </script>
