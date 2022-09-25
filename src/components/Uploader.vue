@@ -62,7 +62,6 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { last } from 'lodash-es';
-import { resolve } from 'path';
 type CheckUpload = (file: File) => boolean | Promise<File>
 
 const props = defineProps({
@@ -142,8 +141,8 @@ const postFile = async (fileObj: UploadFile) => {
   }
 };
 
-const getImgBase64ByFileReader = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
+const getImgBase64ByFileReader = (file: File) => { // !2种方式设置返回类型 1.这里:Promise<string>  2.new Promise<string>
+  return new Promise<string>((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
     fileReader.addEventListener('load', () => {
@@ -186,7 +185,7 @@ const submit = () => {
 
 const beforeUploadCheck = async (files: null | FileList) => {
   console.log(files);
-  if (!files) { return; }
+  if (!files || !files.length) { return; }
   const file = files[0]; // todo 目前只支持1个文件的情况，多个文件下一步支持
   try {
     if (props.beforeUpload) {
