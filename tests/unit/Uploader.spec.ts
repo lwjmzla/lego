@@ -291,25 +291,29 @@ describe('Uploader Component', () => {
     expect(firstImg.attributes('src')).toBe('test.url');
   });
 
-  // todo fileReader mock
-  // it.only('PictureList mode should works fine -- fileReader', async () => {
+  // !fileReader，暂时只知道通过setTimeout和done解决FileReader的异步问题
+  // it('PictureList mode should works fine -- fileReader', (done) => {
   //   mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
 
   //   const wrapper = mount(Uploader, {
   //     props: {
   //       action: 'test.url',
-  //       listType: 'picture'
+  //       listType: 'picture',
+  //       autoUpload: false
   //     }
   //   });
   //   expect(wrapper.get('ul').classes()).toContain('upload-list-picture');
   //   const fileInput = wrapper.get('input').element as HTMLInputElement;
   //   setInputValue(fileInput);
-  //   await wrapper.get('input').trigger('change');
+  //   wrapper.get('input').trigger('change');
   //   // await flushPromises()
-  //   expect(wrapper.findAll('li').length).toBe(1);
-  //   expect(wrapper.find('li:first-child img').exists()).toBeTruthy();
-  //   const firstImg = wrapper.get('li:first-child img');
-  //   expect(firstImg.attributes('src')).toBe('test.url');
+  //   setTimeout(() => {
+  //     done();
+  //     expect(wrapper.findAll('li').length).toBe(1);
+  //     expect(wrapper.find('li:first-child img').exists()).toBeTruthy();
+  //     const firstImg = wrapper.get('li:first-child img');
+  //     expect(firstImg.attributes('src')).toContain('data:image');
+  //   }, 100);
   // });
 
   afterEach(() => {

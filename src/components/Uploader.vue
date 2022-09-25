@@ -62,6 +62,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { last } from 'lodash-es';
+import { resolve } from 'path';
 type CheckUpload = (file: File) => boolean | Promise<File>
 
 const props = defineProps({
@@ -141,7 +142,20 @@ const postFile = async (fileObj: UploadFile) => {
   }
 };
 
-const addFileToList = (file: File) => {
+const getImgBase64ByFileReader = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.addEventListener('load', () => {
+      resolve(fileReader.result as string); // !base64
+    });
+    fileReader.addEventListener('error', (ev) => {
+      reject(ev);
+    });
+  });
+};
+
+const addFileToList = async (file: File) => {
   const fileObj = reactive<UploadFile>({
     uid: uuidv4(),
     size: file.size,
@@ -152,16 +166,11 @@ const addFileToList = (file: File) => {
   if (props.listType === 'picture') {
     try {
       fileObj.url = URL.createObjectURL(file); // !utf16格式
+      // FileReader to preview local image
+      // fileObj.url = await getImgBase64ByFileReader(file);
     } catch (err) {
       console.error('upload File error', err);
     }
-
-    // FileReader to preview local image
-    // const fileReader = new FileReader();
-    // fileReader.readAsDataURL(file);
-    // fileReader.addEventListener('load', () => {
-    //   fileObj.url = fileReader.result as string; // !base64
-    // });
   }
   filesList.value.push(fileObj);
   if (props.autoUpload) {
