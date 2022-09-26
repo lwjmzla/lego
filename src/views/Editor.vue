@@ -46,6 +46,7 @@ import { computed } from 'vue';
 import ComponentsList from '@/components/ComponentsList.vue';
 import { defaultTextTemplates } from '../defaultTemplates';
 import LText from '@/components/LText.vue';
+import LImage from '@/components/LImage.vue';
 import { useStore } from '@/store';
 import { ComponentData } from '@/store/editor';
 // import { TextComponentProps } from '../defaultProps';
@@ -71,7 +72,7 @@ const removeComponent = () => {
 };
 const useComponentList = {
   LText,
-  LImage: LText
+  LImage
 };
 
 const componentChange = (val: any) => {

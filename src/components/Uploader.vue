@@ -63,7 +63,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { last } from 'lodash-es';
 type CheckUpload = (file: File) => boolean | Promise<File>
+type OnSuccess = (response: any, file: UploadFile, fileList:UploadFile[]) => void
 
+const emit = defineEmits(['success', 'error', 'change']);
 const props = defineProps({
   action: {
     type: String,
@@ -75,6 +77,9 @@ const props = defineProps({
   },
   beforeUpload: {
     type: Function as PropType<CheckUpload>
+  },
+  onSuccess: {
+    type: Function as PropType<OnSuccess>
   },
   autoUpload: {
     type: Boolean,
@@ -133,9 +138,14 @@ const postFile = async (fileObj: UploadFile) => {
     console.log(res);
     fileObj.status = 'success';
     fileObj.resp = res.data;
+    // emit('success', { resp: res.data, file: fileObj, list: filesList.value });
+    if (props.onSuccess) {
+      props.onSuccess(res.data, fileObj, filesList.value); // !这里的res.data是最外层,跟config、headers、request同级
+    }
   } catch (err) {
     console.log(err);
     fileObj.status = 'error';
+    emit('error', { error: err, file: fileObj, list: filesList.value });
   } finally {
     fileInput.value!.value = '';
   }

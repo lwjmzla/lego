@@ -64,6 +64,12 @@ export const mapPropsToForm: PropsToForm = {
     initialTransForm: (val: string) => parseInt(val), // !20px => 20
     afterTransForm: (val: number) => val + 'px'
   },
+  width: {
+    text: '宽度',
+    component: 'a-input-number',
+    initialTransForm: (val: string) => parseInt(val), // !20px => 20
+    afterTransForm: (val: number) => val + 'px'
+  },
   lineHeight: {
     text: '行高',
     component: 'a-slider',
