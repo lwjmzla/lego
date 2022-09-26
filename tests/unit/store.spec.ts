@@ -53,10 +53,17 @@ describe('test vuex module', () => {
       expect(currentElement.id).toBe(cloneComponents[0].id);
     });
     it('测试画布中元素新增', () => {
-      const payload: Partial<TextComponentProps> = {
-        text: 'test1'
+      // const payload: Partial<TextComponentProps> = {
+      //   text: 'test1'
+      // };
+      const componentData:ComponentData = {
+        id: 'uuidv4',
+        name: 'LText',
+        props: {
+          text: 'test1'
+        }
       };
-      store.commit('addComponent', payload);
+      store.commit('addComponent', componentData);
       expect(store.state.editor.components).toHaveLength(cloneComponents.length + 1);
       // const lastItem = store.state.editor.components[store.state.editor.components.length - 1];
       const lastItem = last(store.state.editor.components);

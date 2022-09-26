@@ -1,13 +1,13 @@
 import { Module } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalDataProps } from './index';
-import { TextComponentProps } from '../defaultProps';
+import { TextComponentProps, ImageComponentProps } from '../defaultProps';
 import { cloneDeep } from 'lodash-es';
 
 type ComponentName = 'LText' | 'LImage'
 
 export interface ComponentData {
-  props: Partial<TextComponentProps> // 索引签名
+  props: Partial<TextComponentProps & ImageComponentProps> // 索引签名
   id: string
   name: ComponentName
 }
@@ -57,13 +57,13 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     currentId: ''
   },
   mutations: {
-    addComponent (state, props: Partial<TextComponentProps>) {
-      const newComponent:ComponentData = {
-        id: uuidv4(),
-        name: 'LText',
-        props
-      };
-      state.components.push(newComponent);
+    addComponent (state, componentData: ComponentData) {
+      // const newComponent:ComponentData = {
+      //   id: uuidv4(),
+      //   name: 'LText',
+      //   props
+      // };
+      state.components.push(componentData);
     },
     setActive (state, currentId: string) {
       state.currentId = currentId;

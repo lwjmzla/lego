@@ -8,12 +8,16 @@
       <l-text v-bind="item"></l-text>
     </div>
   </div>
+  <!-- <StyledUploader @success="onImageUploaded"></StyledUploader> -->
 </template>
 
 <script lang="ts" setup>
 import { PropType } from 'vue';
 import LText from './LText.vue';
 import { TextComponentProps } from '../defaultProps';
+import StyledUploader from './StyledUploader.vue'; // todo
+import { ComponentData } from '@/store/editor';
+import { v4 as uuidv4 } from 'uuid';
 
 defineProps({
   list: {
@@ -23,6 +27,12 @@ defineProps({
 });
 const emit = defineEmits(['on-item-click']);
 const onItemClick = (item: Partial<TextComponentProps>) => {
-  emit('on-item-click', item);
+  const componentData:ComponentData = {
+    id: uuidv4(),
+    name: 'LText',
+    props: item
+  };
+  emit('on-item-click', componentData);
 };
+
 </script>

@@ -48,16 +48,16 @@ import { defaultTextTemplates } from '../defaultTemplates';
 import LText from '@/components/LText.vue';
 import { useStore } from '@/store';
 import { ComponentData } from '@/store/editor';
-import { TextComponentProps } from '../defaultProps';
+// import { TextComponentProps } from '../defaultProps';
 import EditWrapper from '@/components/EditWrapper.vue';
-// import PropsTable from '@/components/PropsTable.vue'; // !2种方式都可以
-import PropsTable from '@/components/PropsTableTsx.vue'; // !2种方式都可以
+import PropsTable from '@/components/PropsTable.vue'; // !2种方式都可以
+// import PropsTable from '@/components/PropsTableTsx.vue'; // !2种方式都可以
 
 const store = useStore();
 const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement);
 const components = computed(() => store.state.editor.components);
-const addItem = (props:Partial<TextComponentProps>) => {
-  store.commit('addComponent', props);
+const addItem = (componentData: ComponentData) => {
+  store.commit('addComponent', componentData);
 };
 
 const setActive = (id: string) => {

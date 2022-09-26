@@ -16,7 +16,7 @@
     </div>
     <input ref="fileInput"
       type="file"
-      :accept="props.accept"
+      :accept="accept"
       style="display: none;"
       @change="handleFileChange"
     />

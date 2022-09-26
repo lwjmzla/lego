@@ -67,6 +67,10 @@ export interface TextComponentProps extends CommonComponentProps {
   tag: string;
 }
 
+export interface ImageComponentProps extends CommonComponentProps {
+  src: string;
+}
+
 // 文本通用属性
 export const textDefaultProps:TextComponentProps = {
   text: '正文内容',
@@ -83,8 +87,15 @@ export const textDefaultProps:TextComponentProps = {
   ...commonDefaultProps
 };
 
+export const imageDefaultProps: ImageComponentProps = {
+  src: 'test.url',
+  ...commonDefaultProps
+};
+
 // !移除文本非样式属性，后面的参数为要排除的属性
-export const textStylePropNames = without(Object.keys(textDefaultProps), 'actionsType', 'url', 'text');
+export const textStylePropNames = without(Object.keys(textDefaultProps), 'actionType', 'url', 'text'); // !'actionType', 'url'跳转用的；text文本显示；都不属于样式层面的
+// !export const textStylePropNames = Object.keys(textDefaultProps) // 其实都不用排除，浏览器会自动把不属于它的样式属性过滤。
+export const imageStylePropsNames = without(Object.keys(imageDefaultProps), 'actionType', 'url', 'src');
 
 // 处理为vue-props声明的值
 // export const transformToComponentProps = <T extends Record<string, any>> (props: T) => {
