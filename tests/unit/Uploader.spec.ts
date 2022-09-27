@@ -316,6 +316,28 @@ describe('Uploader Component', () => {
   //   }, 100);
   // });
 
+  it('onSuccess onProgress check', async () => {
+    const successCallback = jest.fn();
+    const progressCallback = jest.fn();
+    mockAxios.mockResolvedValueOnce({ data: { url: 'dummy.url' } });
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: 'test.url',
+        onSuccess: successCallback
+        // onProgress: progressCallback // !onProgress在axios里调用，暂时单元测试不了
+      }
+    });
+    const fileInput = wrapper.get('input').element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get('input').trigger('change');
+    expect(wrapper.findAll('li').length).toBe(1);
+    await flushPromises();
+    const firstItem = wrapper.get('li:first-child');
+    expect(firstItem.classes()).toContain('upload-success');
+    expect(successCallback).toHaveBeenCalled();
+    // expect(progressCallback).toHaveBeenCalled();
+  });
+
   afterEach(() => {
     mockAxios.mockReset();
     // mockAxios.post.mockReset();

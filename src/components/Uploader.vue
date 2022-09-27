@@ -52,6 +52,10 @@ export interface UploadFile {
   resp?: any; // !上传接口返回的数据
   url?: string; // !URL.createObjectURL(file);
 }
+// export interface UploadProgressEvent extends ProgressEvent {
+//   percent: number
+// }
+export type UploadProgressEvent = { percent: number } & ProgressEvent
 export default {
 
 };
@@ -63,7 +67,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
 import { last } from 'lodash-es';
 type CheckUpload = (file: File) => boolean | Promise<File>
-type OnSuccess = (response: any, file: UploadFile, fileList:UploadFile[]) => void
+
+type AppendArgument<T extends (...args: any) => any, A extends any[]> = (...args: [...A, ...Parameters<T>]) => ReturnType<T>
+type CommonFn = (file: UploadFile, fileList:UploadFile[]) => void
+
+// type OnSuccess = (response: any, file: UploadFile, fileList:UploadFile[]) => void
+type OnSuccess = AppendArgument<CommonFn, [response: any]>
+// type OnProgress = (evt: UploadProgressEvent, file: UploadFile, fileList: UploadFile[]) => void
+type OnProgress = AppendArgument<CommonFn, [evt: UploadProgressEvent]>
+type OnError = AppendArgument<CommonFn, [err: Error]>
+// type OnChange = CommonFn
+
 
 const emit = defineEmits(['success', 'error', 'change']);
 const props = defineProps({
@@ -81,6 +95,16 @@ const props = defineProps({
   onSuccess: {
     type: Function as PropType<OnSuccess>
   },
+  onProgress: {
+    type: Function as PropType<OnProgress>
+  },
+  onError: {
+    type: Function as PropType<OnError>
+  },
+  // !onChange暂时没需要,文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+  // onChange: {
+  //   type: Function as PropType<OnChange>
+  // },
   autoUpload: {
     type: Boolean,
     default: true
@@ -128,6 +152,17 @@ const postFile = async (fileObj: UploadFile) => {
       params: {},
       headers: {
         'Content-Type': 'multipart/form-data'
+      },
+      onUploadProgress: (progressEvent: ProgressEvent) => {
+        // 原生获取上传进度的事件
+        if (progressEvent.lengthComputable && props.onProgress) {
+          console.log(progressEvent);
+          const uploadProgressEvent = {
+            ...progressEvent,
+            percent: (progressEvent.loaded / progressEvent.total) * 100
+          };
+          props.onProgress(uploadProgressEvent, fileObj, filesList.value);
+        }
       }
     });
     // const res = await axios.post(props.action, formData, {
@@ -139,13 +174,12 @@ const postFile = async (fileObj: UploadFile) => {
     fileObj.status = 'success';
     fileObj.resp = res.data;
     // emit('success', { resp: res.data, file: fileObj, list: filesList.value });
-    if (props.onSuccess) {
-      props.onSuccess(res.data, fileObj, filesList.value); // !这里的res.data是最外层,跟config、headers、request同级
-    }
-  } catch (err) {
+    props.onSuccess && props.onSuccess(res.data, fileObj, filesList.value); // !这里的res.data是最外层,跟config、headers、request同级
+  } catch (err: any) {
     console.log(err);
     fileObj.status = 'error';
-    emit('error', { error: err, file: fileObj, list: filesList.value });
+    // emit('error', { error: err, file: fileObj, list: filesList.value });
+    props.onError && props.onError(new Error(err), fileObj, filesList.value);
   } finally {
     fileInput.value!.value = '';
   }

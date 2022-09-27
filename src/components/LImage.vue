@@ -7,7 +7,7 @@
   />
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, StyleValue } from 'vue';
 import useComponentCommon from '../hooks/useComponentCommon';
 import { transformToComponentProps, imageDefaultProps, imageStylePropsNames } from '../defaultProps';
 const defaultProps = transformToComponentProps(imageDefaultProps);
@@ -22,7 +22,8 @@ export default defineComponent({
     const { styleProps, handleClick } = useComponentCommon(props, imageStylePropsNames);
     console.log(styleProps);
     return {
-      styleProps,
+      // styleProps,
+      styleProps: styleProps as unknown as StyleValue,
       handleClick
     };
   }

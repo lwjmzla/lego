@@ -1,11 +1,12 @@
 <template>
-  <!-- @success="(data) => {handleUploadSuccess(data.resp, data.file.raw)}" -->
+  <!-- @success="(data) => {handleSuccess(data.resp, data.file.raw)}" -->
   <uploader
     class="styled-uploader"
     action="https://uat-openapi.ibaibu.com/api/file/upload"
     :showUploadList="false"
     :beforeUpload="commonUploadCheck"
-    :on-success="handleUploadSuccess"
+    :on-success="handleSuccess"
+    :on-progress="handleProgress"
   >
     <div class="uploader-container">
       <FileImageOutlined />
@@ -30,7 +31,7 @@
 import { defineComponent } from 'vue';
 import { FileImageOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { commonUploadCheck } from '../helper';
-import Uploader, { UploadFile } from './Uploader.vue';
+import Uploader, { UploadFile, UploadProgressEvent } from './Uploader.vue';
 export default defineComponent({
   components: {
     Uploader,
@@ -39,15 +40,19 @@ export default defineComponent({
   },
   emits: ['success'],
   setup (props, { emit }) {
-    // const handleUploadSuccess = (resp: any, file: File) => {
+    // const handleSuccess = (resp: any, file: File) => {
     //   emit('success', { resp, file });
     // };
-    const handleUploadSuccess = (resp: any, file: UploadFile, fileList: UploadFile[]) => {
+    const handleSuccess = (resp: any, file: UploadFile, fileList: UploadFile[]) => {
       emit('success', { resp, file, fileList });
+    };
+    const handleProgress = (uploadProgressEvent: UploadProgressEvent, file: UploadFile, fileList: UploadFile[]) => {
+      console.log(uploadProgressEvent.percent);
     };
     return {
       commonUploadCheck,
-      handleUploadSuccess
+      handleSuccess,
+      handleProgress
     };
   }
 });
