@@ -15,7 +15,10 @@ export const defaultTextTemplates: Partial<TextComponentProps>[] = [
     text: '链接内容',
     color: '#1890ff',
     textDecoration: 'underline',
-    tag: 'p'
+    tag: 'p',
+    actionType: 'url',
+    url: 'https://www.baidu.com',
+    isEditing: true
   },
   {
     text: '按钮内容',

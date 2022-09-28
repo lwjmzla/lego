@@ -44,9 +44,10 @@ export const testComponents: ComponentData[] = [
     name: 'LText',
     props: {
       text: 'hello3',
-      fontSize: '40px'
-      // actionType: 'url',
-      // url: 'https://www.baidu.com'
+      fontSize: '40px',
+      actionType: 'url',
+      url: 'https://www.baidu.com',
+      isEditing: true
     }
   }
 ];

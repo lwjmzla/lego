@@ -5,6 +5,7 @@ export interface CommonComponentProps {
   // actions
   actionType: string;
   url: string;
+  isEditing: boolean;
   // size
   height: string;
   width: string;
@@ -31,6 +32,7 @@ export const commonDefaultProps:CommonComponentProps = {
   // actions事件
   actionType: '',
   url: '',
+  isEditing: false, // !在/editor页面的时候才把isEditing设为true
   // size
   height: '',
   width: '318px',
@@ -91,6 +93,13 @@ export const imageDefaultProps: ImageComponentProps = {
   src: 'test.url',
   ...commonDefaultProps
 };
+
+// export const extraComponentProps = {
+//   isEditing: {
+//     type: Boolean,
+//     default: false
+//   }
+// };
 
 // !移除文本非样式属性，后面的参数为要排除的属性
 export const textStylePropNames = without(Object.keys(textDefaultProps), 'actionType', 'url', 'text'); // !'actionType', 'url'跳转用的；text文本显示；都不属于样式层面的
