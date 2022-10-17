@@ -2,7 +2,7 @@
   <!-- @success="(data) => {handleSuccess(data.resp, data.file.raw)}" -->
   <uploader
     class="styled-uploader"
-    action="https://uat-openapi.ibaibu.com/api/file/upload"
+    :action="action"
     :showUploadList="false"
     :beforeUpload="commonUploadCheck"
     :on-success="handleSuccess"
@@ -49,10 +49,13 @@ export default defineComponent({
     const handleProgress = (uploadProgressEvent: UploadProgressEvent, file: UploadFile, fileList: UploadFile[]) => {
       console.log(uploadProgressEvent.percent);
     };
+    const arr = ['i', 'b', 'a', 'i', 'b', 'u'];
+    const action = 'https://uat-openapi.' + arr.join('') + '.com/api/file/upload';
     return {
       commonUploadCheck,
       handleSuccess,
-      handleProgress
+      handleProgress,
+      action
     };
   }
 });

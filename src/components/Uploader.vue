@@ -83,7 +83,7 @@ const emit = defineEmits(['success', 'error', 'change']);
 const props = defineProps({
   action: {
     type: String,
-    default: 'https://uat-openapi.ibaibu.com/api/file/upload'
+    default: ''
   },
   accept: {
     type: String,

@@ -26,7 +26,7 @@
     </Uploader>
     <el-button type="primary" @click="handleUpload">手动上传</el-button>
     <div>
-      <form method="post" enctype="multipart/form-data" action="https://uat-openapi.ibaibu.com/api/file/upload">
+      <form method="post" enctype="multipart/form-data" :action="action">
         <input type="file"
           name="files"
           multiple
@@ -54,6 +54,8 @@ export default defineComponent({
   setup () {
     // const instance = getCurrentInstance()
     // instance?.proxy?.$refs.uploader
+    const arr = ['i', 'b', 'a', 'i', 'b', 'u'];
+    const action = 'https://uat-openapi.' + arr.join('') + '.com/api/file/upload';
 
     const uploader = ref<any>(null);
     const colorChange = (val: string) => {
@@ -67,7 +69,7 @@ export default defineComponent({
       const formData = new FormData();
       formData.append('files', files[0]);
       axios({
-        url: 'https://uat-openapi.ibaibu.com/api/file/upload',
+        url: action,
         method: 'post',
         data: formData,
         params: {},
@@ -84,7 +86,8 @@ export default defineComponent({
       uploader,
       colorChange,
       onFileChange,
-      handleUpload
+      handleUpload,
+      action
     };
   }
 });

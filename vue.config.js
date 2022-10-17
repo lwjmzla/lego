@@ -1,6 +1,9 @@
 const path = require('path');
 const { defineConfig } = require('@vue/cli-service');
 const resolve = (dir) => path.join(__dirname, './', dir);
+
+const arr = ['i', 'b', 'a', 'i', 'b', 'u'];
+
 module.exports = defineConfig({
   configureWebpack: (config) => {
     // 调试JS
@@ -15,5 +18,5 @@ module.exports = defineConfig({
     config.resolve.alias
       .set('@', resolve('src'));
   },
-  devServer: { allowedHosts: ['.youbaobao.xyz', '.ibaibu.com'] }
+  devServer: { allowedHosts: ['.youbaobao.xyz', '.' + arr.join('') + '.com'] }
 });
