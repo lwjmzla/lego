@@ -1,30 +1,33 @@
 <template>
   <!-- @success="(data) => {handleSuccess(data.resp, data.file.raw)}" -->
-  <uploader
-    class="styled-uploader"
-    :action="action"
-    :showUploadList="false"
-    :beforeUpload="commonUploadCheck"
-    :on-success="handleSuccess"
-    :on-progress="handleProgress"
-  >
-    <div class="uploader-container">
-      <FileImageOutlined />
-      <h4>上传图片</h4>
-    </div>
-    <template #loading>
-      <div class="uploader-container">
-        <LoadingOutlined spin />
-        <h4>上传中</h4>
-      </div>
-    </template>
-    <template #uploaded>
+  <div class="div1">
+    <uploader
+      class="styled-uploader"
+      :action="action"
+      :showUploadList="false"
+      :beforeUpload="commonUploadCheck"
+      :on-success="handleSuccess"
+      :on-progress="handleProgress"
+    >
       <div class="uploader-container">
         <FileImageOutlined />
         <h4>上传图片</h4>
       </div>
-    </template>
-  </uploader>
+      <template #loading>
+        <div class="uploader-container">
+          <LoadingOutlined spin />
+          <h4>上传中</h4>
+        </div>
+      </template>
+      <template #uploaded>
+        <div class="uploader-container">
+          <FileImageOutlined />
+          <h4>上传图片</h4>
+        </div>
+      </template>
+    </uploader>
+  </div>
+
 </template>
 
 <script lang="ts">
@@ -49,8 +52,9 @@ export default defineComponent({
     const handleProgress = (uploadProgressEvent: UploadProgressEvent, file: UploadFile, fileList: UploadFile[]) => {
       console.log(uploadProgressEvent.percent);
     };
-    const arr = ['i', 'b', 'a', 'i', 'b', 'u'];
-    const action = 'https://uat-openapi.' + arr.join('') + '.com/api/file/upload';
+    // const arr = ['i', 'b', 'a', 'i', 'b', 'u'];
+    // const action = 'https://uat-openapi.' + arr.join('') + '.com/api/file/upload';
+    const action = 'http://183.6.74.73:38007/oss/fileUpload';
     return {
       commonUploadCheck,
       handleSuccess,
@@ -84,4 +88,8 @@ export default defineComponent({
     margin-left: 10px;
   }
 }
+</style>
+
+<style lang="scss" scoped>
+  .div1{background: red;}
 </style>

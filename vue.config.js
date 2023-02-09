@@ -18,5 +18,19 @@ module.exports = defineConfig({
     config.resolve.alias
       .set('@', resolve('src'));
   },
-  devServer: { allowedHosts: ['.youbaobao.xyz', '.' + arr.join('') + '.com'] }
+  devServer: {
+    allowedHosts: ['.youbaobao.xyz', '.' + arr.join('') + '.com']
+    // headers: {
+    //   'Access-Control-Allow-Origin': '*'
+    // },
+    // proxy: {
+    //   '/oss': {
+    //     target: 'http://183.6.74.73:38007',
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       ['^' + '/oss']: ''
+    //     }
+    //   }
+    // }
+  }
 });

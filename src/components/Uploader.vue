@@ -61,7 +61,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { defineProps, reactive, ref, computed, PropType } from 'vue';
+import { defineProps, reactive, ref, computed, PropType, nextTick } from 'vue';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons-vue';
@@ -227,10 +227,25 @@ const submit = () => {
   filesList.value.filter(file => file.status === 'ready').forEach(readyFile => postFile(readyFile));
 };
 
+// 下载图片
+const downLoadImg = (url: string, imgName: string) => {
+  const oA = document.createElement('a');
+  oA.download = imgName;
+  oA.href = url;
+  document.body.appendChild(oA);
+  oA.click();
+  oA.remove();
+};
+
 const beforeUploadCheck = async (files: null | FileList) => {
   console.log(files);
   if (!files || !files.length) { return; }
   const file = files[0]; // todo 目前只支持1个文件的情况，多个文件下一步支持
+  const url = URL.createObjectURL(file); // utf16格式
+  // downLoadImg(url, 'lwj');
+  // nextTick(() => {
+  //   downLoadImg(url, 'lwb');
+  // });
   try {
     if (props.beforeUpload) {
       const result = props.beforeUpload(file);

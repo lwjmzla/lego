@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UploadFile } from './Uploader.vue';
 import { message } from 'ant-design-vue';
 import { getImageDimensions } from '../helper';
-
+console.log(StyledUploader);
 interface DataInfo{
   url: string;
   // length: number;
@@ -52,7 +52,7 @@ const onItemClick = (item: Partial<TextComponentProps>) => {
 
 const onImageUploaded = (emitData: { resp: UploadResp; file: UploadFile }) => {
   const { resp, file } = emitData;
-  const { successful, data = [] } = resp;
+  const { successful, data = '' } = resp;
   const componentData: ComponentData = {
     name: 'LImage',
     id: uuidv4(),
@@ -62,7 +62,7 @@ const onImageUploaded = (emitData: { resp: UploadResp; file: UploadFile }) => {
   };
   message.success('上传成功');
   // componentData.props.src = URL.createObjectURL(file.raw);
-  componentData.props.src = data[0].url || '';
+  componentData.props.src = data ? 'http://183.6.74.73:38007/oss/file' + data : '';
 
   getImageDimensions(file.raw).then(({ width }) => {
     console.log(width);
