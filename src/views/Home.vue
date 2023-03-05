@@ -36,6 +36,12 @@
         <button type="submit">Submit</button>
       </form>
     </div>
+
+    <div class="main">
+      <div v-for="n in 100" :key="n">
+        <HeavyComponent v-if="defer(n)"></HeavyComponent>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,12 +50,15 @@ import { defineComponent, ref, getCurrentInstance } from 'vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import axios from 'axios';
 import Uploader from '@/components/Uploader.vue';
+import HeavyComponent from '@/components/HeavyComponent.vue';
+import { useDefer } from '@/hooks/useDefer';
 
 export default defineComponent({
   name: 'Home',
   components: {
     ColorPicker,
-    Uploader
+    Uploader,
+    HeavyComponent
   },
   setup () {
     // const instance = getCurrentInstance()
@@ -82,13 +91,26 @@ export default defineComponent({
     const handleUpload = () => {
       uploader.value.submit();
     };
+    const defer = useDefer();
     return {
       uploader,
       colorChange,
       onFileChange,
       handleUpload,
-      action
+      action,
+      defer
     };
   }
 });
 </script>
+
+<style lang="scss" scoped>
+  .main{
+    display: flex;
+    flex-wrap: wrap;
+    >div{
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  }
+</style>

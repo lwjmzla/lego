@@ -19,10 +19,10 @@
           <h4>上传中</h4>
         </div>
       </template>
-      <template #uploaded>
+      <template #uploaded="{ lastUploadedData }">
         <div class="uploader-container">
           <FileImageOutlined />
-          <h4>上传图片</h4>
+          <h4>上传图片{{ lastUploadedData }}</h4>
         </div>
       </template>
     </uploader>
