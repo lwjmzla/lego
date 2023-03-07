@@ -1,14 +1,12 @@
 import { ref } from 'vue';
-
 /**
- *
  * @param maxFrameCount 表示最大检测的帧数，如果渲染的东西特别多可以调大，
  * 可以理解为总共要画的次数
  * @returns {function(*): boolean}
  */
-export function useDefer (maxFrameCount = 1000) {
+export function useDefer (maxFrameCount = 20) {
   // 记录目前画画画了多少次
-  const frameCount = ref(0);
+  const frameCount = ref(1);
   // 当下一次该画画的时间点到来的时候，frameCount.value画的次数加一，表示画了一次
   const refreshFrameCount = () => {
     /**
@@ -16,20 +14,19 @@ export function useDefer (maxFrameCount = 1000) {
      * 只要没有达到最大帧数就持续的去调用refreshFrameCount
      */
     requestAnimationFrame(() => {
+      console.log(`第${frameCount.value}帧结束`);
       frameCount.value++;
-      console.log(frameCount.value++, '画了几次');
       // 没有达到最大次数就继续调用。不停的持续的画，默认达到1000次就不画了
-      if (frameCount.value < maxFrameCount) {
+      if (frameCount.value <= maxFrameCount) {
         refreshFrameCount();
       }
     });
   };
   refreshFrameCount();
-  // 有没有超过目前画的次数,比如传入一个2，目前画了3次，就会返回true
-  return function (showInFrameCount: number) {
+  return function (showInFrameCount: number) { // ! v-if="defer(n)"，frameCount.value值变了，就会重新执行v-if判断，所以执行了多次defer(xx)，defer(1),defer(2)...
     // 判断当前渲染的帧数有没有大于传入的n
-    console.log('当前渲染的帧数，即当前画的次数', frameCount.value);
-    console.log('传入的帧数，即传入第几次要画', showInFrameCount);
+    console.log(`当前执行第${frameCount.value}帧`);
+    console.log(`v-for的n值:${showInFrameCount},当前帧大于等于当前值就会渲染--` + (frameCount.value >= showInFrameCount ? '渲染' : ''));
     return frameCount.value >= showInFrameCount;
   };
 }

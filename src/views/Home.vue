@@ -38,7 +38,7 @@
     </div>
 
     <div class="main">
-      <div v-for="n in 100" :key="n">
+      <div v-for="n in 10" :key="n">
         <HeavyComponent v-if="defer(n)"></HeavyComponent>
       </div>
     </div>
